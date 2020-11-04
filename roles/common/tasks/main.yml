@@ -1,0 +1,11 @@
+---
+- debug:
+    msg: "{{ansible_architecture}}"
+
+- name: Update apt cache
+  apt:
+    update-cache: yes
+
+- name: Set the hostname as inventory name
+  hostname:
+    name: "{{inventory_hostname}}"

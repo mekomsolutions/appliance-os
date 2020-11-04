@@ -1,0 +1,9 @@
+---
+- hosts: all
+  roles:
+    - role: common
+      become: true
+      when: ansible_architecture == "aarch64"
+    - role: microK8s
+      become: true
+      when: ansible_architecture == "aarch64"
