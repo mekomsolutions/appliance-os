@@ -1,0 +1,21 @@
+---
+- name: Enable dns
+  shell: "source /etc/profile.d/apps-bin-path.sh && microk8s.enable dns"
+  args:
+    executable: /bin/bash
+
+- name: Enable ingress
+  shell: "source /etc/profile.d/apps-bin-path.sh && microk8s.enable ingress"
+  args:
+    executable: /bin/bash
+
+- name: Enable storage
+  shell: "source /etc/profile.d/apps-bin-path.sh && microk8s.enable storage"
+  args:
+    executable: /bin/bash
+
+- name: Preload some trusted tokens
+  shell: "source /etc/profile.d/apps-bin-path.sh && /snap/bin/microk8s.add-node -t {{ item }} -l -1"
+  args:
+    executable: /bin/bash
+  loop: "{{ k8s_token_list }}"

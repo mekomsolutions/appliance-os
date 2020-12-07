@@ -2,7 +2,7 @@
 
 Ansible playbooks to configure a Kubernetes cluster.
 
-Edit the [hosts.yml](hosts.yml) file with the K8s nodes IPs and user.
+Edit the [hosts.yml](hosts.yml) file with the correct IPs and users.
 
 Run the playbook:
 

@@ -1,9 +1,14 @@
 ---
-- hosts: all
+- hosts: vhosts
+  gather_facts: no
   roles:
-    - role: common
+    - role: prepare_os
       become: true
-      when: ansible_architecture == "aarch64"
-    - role: microK8s
+    - role: chroot_jail
       become: true
-      when: ansible_architecture == "aarch64"
+
+- hosts: jailed_rpis
+  gather_facts: no
+  tasks:
+  - name: Just a debug statement
+    shell: "echo 'Works!'"
