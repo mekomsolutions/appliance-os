@@ -1,5 +1,5 @@
 ---
-- hosts: vhosts
+- hosts: vms
   gather_facts: no
   roles:
     - role: prepare_os

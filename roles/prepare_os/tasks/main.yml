@@ -6,6 +6,11 @@
     dest: /opt/os-origin.img.xz
   register: download
 
+- name: Install Kpartx package
+  package:
+    name:
+      - kpartx
+
 - name: Unarchive the image
   shell: "unxz --keep /opt/os-origin.img.xz"
   when: download.changed
@@ -44,6 +49,10 @@
   set_fact:
     loop_mapper: "{{ kpartx.stdout_lines[1].split(' :')[0] }}"
 
+- name: Apply partition expansion when needed
+  shell: "e2fsck -y -f /dev/mapper/{{loop_mapper}}"
+  ignore_errors: yes
+
 - name: Resize file system
   shell: "resize2fs -p /dev/mapper/{{loop_mapper}}"
   notify: Cleanup device
@@ -74,7 +83,7 @@
   copy:
     src: /etc/resolv.conf
     dest: "{{ image_mount_point }}/etc/resolv.conf"
-    remote_src:
+    remote_src: yes
 
 - name: Install Qemu packages
   package:
@@ -91,9 +100,11 @@
     src: /usr/bin/qemu-arm-static
     dest:  "{{ image_mount_point }}/usr/bin"
     remote_src: yes
+    mode: u+rwx,g+rx,o+rx
 
 - name: Copy 'qemu-aarch64-static'
   copy:
     src: /usr/bin/qemu-aarch64-static
     dest:  "{{ image_mount_point }}/usr/bin"
     remote_src: yes
+    mode: u+rwx,g+rx,o+rx

@@ -3,6 +3,11 @@
   user:
     name: "{{ jailed_user }}"
     comment: Jailed User with chroot access
+    uid: 1313
+    group: root
+- name: Create jailed user in chroot filesystem
+  shell: chroot {{ image_mount_point }} useradd -u 1313 -m {{ jailed_user }}
+  become: yes
 
 - name: Configure the sshd_config to redirect to chroot
   lineinfile:
@@ -10,12 +15,38 @@
     line: "{{ item }}"
   with_items:
     - "Match User {{ jailed_user }}"
-    - "ChrootDirectory {{ image_mount_point }}"
+    - "    ChrootDirectory {{ image_mount_point }}"
 
 - name: "Create 'home/{{jailed_user}}/.ssh' folder"
   file:
-    path: "home/{{jailed_user}}/.ssh"
+    path: "/home/{{jailed_user}}/.ssh"
     state: directory
+    owner: "{{ jailed_user }}"
+
+- name: Add ssh key to Jailed user
+  copy:
+    src: "/home/{{ ansible_ssh_user }}/.ssh/authorized_keys"
+    dest: "/home/{{ jailed_user }}/.ssh/authorized_keys"
+    owner: "{{ jailed_user }}"
+    remote_src: yes
+
+- name: "Create jailed home folder"
+  file:
+    path: "{{ image_mount_point }}/home/{{jailed_user}}"
+    state: directory
+    owner: "{{ jailed_user }}"
+
+- name: Add Jailed to sudoers
+  lineinfile:
+    path: "{{ image_mount_point }}/etc/sudoers"
+    line: "{{ item }}"
+  with_items:
+    - "{{ jailed_user }} ALL=(ALL) NOPASSWD: ALL"
+
+- name: Restart SSH service
+  service:
+    name: ssh
+    state: restarted
 
 # TODO: Add the correct Public Key to /home/jailed/.ssh/authorized_keys
 # TODO: Set the access rights appropriately
