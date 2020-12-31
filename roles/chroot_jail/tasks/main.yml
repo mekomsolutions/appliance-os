@@ -47,6 +47,3 @@
   service:
     name: ssh
     state: restarted
-
-# TODO: Add the correct Public Key to /home/jailed/.ssh/authorized_keys
-# TODO: Set the access rights appropriately

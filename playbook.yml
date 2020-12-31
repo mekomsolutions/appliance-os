@@ -9,6 +9,6 @@
 
 - hosts: jailed_rpis
   gather_facts: no
-  tasks:
-  - name: Just a debug statement
-    shell: "echo 'Works!'"
+  roles:
+  - role: usb_autorunner
+    become: true

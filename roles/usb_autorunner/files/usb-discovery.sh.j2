@@ -1,0 +1,26 @@
+#!/bin/bash
+
+filteredDeviceLabel=("cluster-nfs-disk")
+
+inotifywait --format '%f' -m /dev -e CREATE | while read device
+do
+	devIsConnected=$(blkid -o device | grep "dev/sd")
+
+	if [[ ( "$devIsConnected" != 0) ]]
+	then
+		echo "device connected"
+		echo $device
+		if [[ $device =~ ^sd.* ]]
+		then
+
+			echo "Reading device..."
+			sleep 1
+			echo $(lsblk /dev/$device -o MOUNTPOINT -n)
+			if [[ ! $(lsblk /dev/$device -o LABEL -n) =~ $filteredDeviceLabel ]]
+			then
+				./autorun.sh $(lsblk /dev/$device -o MOUNTPOINT -n) 
+			fi
+			echo "done."
+		fi
+	fi
+done

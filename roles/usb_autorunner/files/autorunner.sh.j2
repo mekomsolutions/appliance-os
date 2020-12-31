@@ -1,0 +1,43 @@
+#!/bin/bash
+
+AUTORUN_CONTENT_PATH={{ usb_autorunner_install_path }}/workdir
+PRIVATE_CERT={{ usb_autorunner_install_path }}/certificate/autorunner.pem
+PUBLIC_CERT={{ usb_autorunner_install_path }}/certificate/autorunner.pub.pem
+
+AUTORUN_FILENAME=startup.zip.enc
+KEY_FILENAME=secret.key.enc
+
+USB_DATA_PATH=$1
+
+if [ ! -r $USB_DATA_PATH/$KEY_FILENAME ]
+then
+  echo "key file is missing, exiting"
+  exit
+fi
+
+if [ -r $USB_DATA_PATH/$AUTORUN_FILENAME ]
+then 
+  
+  autorun_file_path=$(find $USB_DATA_PATH -maxdepth 1 -name $AUTORUN_FILENAME)
+  decrypt_key_path=$(find $USB_DATA_PATH -maxdepth 1 -name $KEY_FILENAME)
+  
+  # Clean workdir
+  rm -f $AUTORUN_CONTENT_PATH/*
+  # Decrypting and executing the autorun script
+
+
+  openssl rsautl -decrypt -oaep -inkey $PRIVATE_CERT -in $decrypt_key_path -out $AUTORUN_CONTENT_PATH/secret.key
+  openssl enc -d -aes-256-cbc -pbkdf2 -in $autorun_file_path -out $AUTORUN_CONTENT_PATH/startup.zip -pass file:$AUTORUN_CONTENT_PATH/secret.key
+
+  unzip -oq $AUTORUN_CONTENT_PATH/startup.zip -d $AUTORUN_CONTENT_PATH
+
+  if [ -r $AUTORUN_CONTENT_PATH/startup.sh ]
+  then
+    sh $AUTORUN_CONTENT_PATH/startup.sh
+  else
+    echo "startup.sh file not found!"
+  fi
+else
+  # Create Backup profile
+  echo "no autorun defined, exiting"
+fi

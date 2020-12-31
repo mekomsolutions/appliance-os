@@ -8,9 +8,8 @@
 
 - name: Install Kpartx package
   package:
-    name:
-      - kpartx
-
+    name: kpartx
+    state: present
 - name: Unarchive the image
   shell: "unxz --keep /opt/os-origin.img.xz"
   when: download.changed
@@ -108,3 +107,19 @@
     dest:  "{{ image_mount_point }}/usr/bin"
     remote_src: yes
     mode: u+rwx,g+rx,o+rx
+
+- name: Mount host '/proc' folder
+  ansible.posix.mount:
+    path: "{{ image_mount_point }}/proc"
+    src: /proc
+    opts: bind
+    state: mounted
+    fstype: none
+
+- name: Mount host '/dev' folder
+  ansible.posix.mount:
+    path: "{{ image_mount_point }}/dev"
+    src: /dev
+    opts: bind
+    state: mounted
+    fstype: none

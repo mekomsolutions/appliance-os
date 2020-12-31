@@ -1,0 +1,9 @@
+[Unit]
+Description=USB Discovery
+
+[Service]
+Type=simple
+ExecStart=/bin/bash {{ usb_autorunner_install_path }}/usb-discovery.sh
+
+[Install]
+WantedBy=multi-user.target
