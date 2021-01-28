@@ -1,4 +1,4 @@
-### openmrs-appliance-playbooks
+### appliance-os
 
 Ansible playbooks to configure a Kubernetes cluster.
 
