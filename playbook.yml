@@ -1,14 +1,28 @@
 ---
-- hosts: vms
+- hosts: host_vm
   gather_facts: no
+  become: true
   roles:
-    - role: prepare_os
-      become: true
-    - role: chroot_jail
-      become: true
+    - role: bootstrap
+    - role: qemu
 
-- hosts: jailed_rpis
+- hosts: k3s_cluster
   gather_facts: no
+  become: true
   roles:
-  - role: usb_autorunner
-    become: true
+    - role: setup_os/common
+    - role: setup_os/usb_autorunner
+    - role: k3s/install
+
+- hosts: master
+  gather_facts: no
+  become: true
+  roles:
+    - role: k3s/master
+
+- hosts: node
+  gather_facts: no
+  become: true
+  roles:
+    - role: k3s/node
+

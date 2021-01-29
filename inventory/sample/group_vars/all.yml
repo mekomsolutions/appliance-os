@@ -1,0 +1,12 @@
+---
+
+force_handlers: True
+image_mount_point: /mnt/os
+cluster_user: rpi_admin
+cluster_user_id: 1040
+k3s_version: v1.19.7+k3s1
+systemd_dir: /etc/systemd/system
+image_ssh_port: 5555
+cluster_master_token: "{{ token }}"
+master_static_ip: 10.0.0.1
+usb_autorunner_install_path: /opt/autorunner

@@ -1,4 +1,0 @@
-microk8s_version: "1.19/edge"
-
-# Enable to install Kubernetes dashboard
-k8s_dashboard: true

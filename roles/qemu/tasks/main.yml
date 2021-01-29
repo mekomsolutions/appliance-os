@@ -1,0 +1,46 @@
+---
+
+- name: Install Qemu packages
+  package:
+    name:
+      - qemu
+      - binfmt-support
+      - qemu-user-static
+      - qemu-utils
+      - qemu-efi-aarch64
+      - qemu-system-arm
+
+- name: Copy 'qemu-arm-static'
+  copy:
+    src: /usr/bin/qemu-arm-static
+    dest:  "{{ image_mount_point }}/usr/bin"
+    remote_src: yes
+    mode: u+rwx,g+rx,o+rx
+
+- name: Copy 'qemu-aarch64-static'
+  copy:
+    src: /usr/bin/qemu-aarch64-static
+    dest:  "{{ image_mount_point }}/usr/bin"
+    remote_src: yes
+    mode: u+rwx,g+rx,o+rx
+
+- name: Enable cgroup via boot command line
+  lineinfile:
+    path: "{{ image_mount_point }}/boot/firmware/cmdline.txt"
+    backrefs: yes
+    regexp: '^((?!.*\bcgroup_enable=cpuset cgroup_memory=1 cgroup_enable=memory\b).*)$'
+    line: '\1 cgroup_enable=cpuset cgroup_memory=1 cgroup_enable=memory'
+
+- name: Unmount the image
+  ansible.posix.mount:
+    path: /tmp/os
+    state: unmounted
+
+- name: Run Qemu VM
+  shell: qemu-system-aarch64 -M virt -m 1024 -smp 4 -cpu cortex-a53 -kernel /opt/vmlinuz -initrd /opt/initrd.img -net tap -net nic -drive file=/opt/os.img,if=none,id=drive0,cache=writeback -device virtio-blk-device,drive=drive0,bootindex=0 -append 'root=/dev/vda2 noresume rw cgroup_enable=cpuset cgroup_memory=1 cgroup_enable=memory' -no-reboot -netdev user,id=net1,hostfwd=tcp::{{ image_ssh_port }}-:22 -device virtio-net-device,netdev=net1 -daemonize -display none
+  become: true
+
+- name: Wait for ssh port to become open on the host
+  wait_for:
+    port: "{{ image_ssh_port }}"
+    delay: 200

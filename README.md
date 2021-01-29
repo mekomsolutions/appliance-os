@@ -1,11 +1,18 @@
 ### appliance-os
 
-Ansible playbooks to configure a Kubernetes cluster.
+Ansible playbooks to configure a Kubernetes cluster node/master.
 
-Edit the [hosts.yml](hosts.yml) file with the correct IPs and users.
+
+Edit the [hosts.ini](inventory/sample/hosts.ini) file with the correct IPs and users.
+
+Set the the cluster token value
+
+```bash
+export CLUSTER_TOKEN=<token>
+```
 
 Run the playbook:
 
-```
-ansible-playbook -i hosts.yml  playbook.yml
+```bash
+ansible-playbook playbook.yml -i inventory/sample/hosts.ini --extra-vars "cluster_master_token=$CLUSTER_TOKEN"
 ```

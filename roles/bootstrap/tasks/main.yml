@@ -1,0 +1,170 @@
+---
+
+- name: Download RPi OS image
+  get_url:
+    url: "{{ rpi_os_image_url }}"
+    checksum: "{{ rpi_os_image_checksum }}"
+    dest: /opt/os-origin.img.xz
+  register: download
+
+- name: Install Kpartx package
+  package:
+    name: kpartx
+    state: present
+
+- name: Install pip package
+  package:
+    name: python3-pip
+    state: present
+
+- name: Check that the somefile.conf exists
+  stat:
+    path: /opt/os-origin.img
+  register: unziped_image
+
+- name: Unarchive the image
+  shell: "unxz --keep /opt/os-origin.img.xz"
+  when: unziped_image.stat.exists == false
+
+- name: Install psutil python package
+  pip:
+    name: psutil
+
+- name: Check if VM ssh port is open
+  wait_for:
+    host: localhost
+    port: "{{ image_ssh_port }}"
+    state: started
+    delay: 0
+    timeout: 3
+  ignore_errors: yes
+  register: vm_port_status
+
+- name: Getting process IDs of the process
+  community.general.pids:
+      name: qemu-system-aarch64
+  register: pids_of_qemu
+  when: vm_port_status is succeeded
+
+- name: Kill qemu process
+  shell: kill -9 {{ pids_of_qemu.pids[0] }}
+  become: true
+  when: vm_port_status is succeeded
+
+- name: Wait for machine to turn off
+  wait_for:
+    timeout: 10
+  when: vm_port_status is succeeded
+
+- name: Make a copy of the file
+  shell: "cp /opt/os-origin.img /opt/os.img"
+
+- name: Add some free space to the image
+  shell: "dd if=/dev/zero bs=1M count=500 >> /opt/os.img"
+
+- name: Expand partition 2
+  shell: "parted /opt/os.img resizepart 2 100%"
+
+- name: Cleanup mounts
+  ansible.posix.mount:
+    path: "{{ image_mount_point }}"
+    state: unmounted
+
+- name: Cleanup device
+  shell: "echo 'remove device' && kpartx -d /opt/os.img"
+
+- name: Enable loop device
+  community.general.modprobe:
+    name: loop
+    state: present
+
+- name: Attach image to a virtual device
+  shell: "kpartx -a /opt/os.img"
+  notify: Cleanup device
+
+- name: List attached virtual device
+  shell: "kpartx -l /opt/os.img"
+  register: kpartx
+
+- name: Get the loop mapper path from previous output
+  set_fact:
+    loop_mapper: "{{ kpartx.stdout_lines[1].split(' :')[0] }}"
+
+- name: Apply partition expansion when needed
+  shell: "e2fsck -y -f /dev/mapper/{{loop_mapper}}"
+  ignore_errors: yes
+
+- name: Resize file system
+  shell: "resize2fs -p /dev/mapper/{{loop_mapper}}"
+  notify: Cleanup device
+
+- name: Flush handlers
+  meta: flush_handlers
+
+- name: "Get the data partition first byte"
+  community.general.parted:
+    device: /opt/os.img
+    unit: B
+  register: parted
+
+- name: "Create '{{ image_mount_point }}' mount point"
+  file:
+    path: "{{ image_mount_point }}"
+    state: directory
+
+- name: Mount the data partition on loop, with offset
+  ansible.posix.mount:
+    src: /opt/os.img
+    fstype: ext4
+    opts: "loop,offset={{ parted.partitions[1].begin | int }}"
+    path: "{{ image_mount_point }}"
+    state: mounted
+
+- name: Copy initrd.img
+  copy:
+    src: "{{ image_mount_point }}/boot/initrd.img"
+    dest: /opt/initrd.img
+    remote_src: yes
+
+- name: Copy vmlinux
+  copy:
+    src: "{{ image_mount_point }}/boot/vmlinuz"
+    dest: /opt/vmlinuz
+    remote_src: yes
+
+- name: Create a user for the cluster
+  user:
+    name: "{{ cluster_user }}"
+    comment: Cluster User with root access
+    uid: 1041
+    group: root
+
+- name: Create cluster user in chroot filesystem
+  shell: chroot {{ image_mount_point }} useradd -u 1041 -m {{ cluster_user }}
+  become: yes
+
+- name: "Create home folder"
+  file:
+    path: "{{ image_mount_point }}/home/{{ cluster_user }}"
+    state: directory
+    owner: "{{ cluster_user }}"
+
+- name: "Create '.ssh/' folder"
+  file:
+    path: "{{ image_mount_point }}/home/{{ cluster_user }}/.ssh"
+    state: directory
+    owner: "{{ cluster_user }}"
+
+- name: Add user to sudoers
+  lineinfile:
+    path: "{{ image_mount_point }}/etc/sudoers"
+    line: "{{ item }}"
+  with_items:
+    - "{{ cluster_user }} ALL=(ALL) NOPASSWD: ALL"
+ 
+- name: Add ssh key to cluster user
+  copy:
+    src: "/home/{{ ansible_ssh_user }}/.ssh/authorized_keys"
+    dest: "{{ image_mount_point }}/home/{{ cluster_user }}/.ssh/authorized_keys"
+    owner: "{{ cluster_user }}"
+    remote_src: yes

@@ -1,6 +1,0 @@
----
-- name: Join cluster
-  shell: "source /etc/profile.d/apps-bin-path.sh && /snap/bin/microk8s.join {{ groups['k8s_master'][0] }}:25000/{{ item }}"
-  args:
-    executable: /bin/bash
-  loop: "{{ k8s_token_list }}"
