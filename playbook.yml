@@ -10,8 +10,8 @@
   gather_facts: no
   become: true
   roles:
-    - role: setup_os/common
-    - role: setup_os/usb_autorunner
+    - role: common
+    - role: usb_autorunner
     - role: k3s/install
 
 - hosts: master

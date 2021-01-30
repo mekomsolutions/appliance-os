@@ -1,28 +1,5 @@
 ---
 
-- name: Install Qemu packages
-  package:
-    name:
-      - qemu
-      - binfmt-support
-      - qemu-user-static
-      - qemu-utils
-      - qemu-efi-aarch64
-      - qemu-system-arm
-
-- name: Copy 'qemu-arm-static'
-  copy:
-    src: /usr/bin/qemu-arm-static
-    dest:  "{{ image_mount_point }}/usr/bin"
-    remote_src: yes
-    mode: u+rwx,g+rx,o+rx
-
-- name: Copy 'qemu-aarch64-static'
-  copy:
-    src: /usr/bin/qemu-aarch64-static
-    dest:  "{{ image_mount_point }}/usr/bin"
-    remote_src: yes
-    mode: u+rwx,g+rx,o+rx
 
 - name: Enable cgroup via boot command line
   lineinfile:

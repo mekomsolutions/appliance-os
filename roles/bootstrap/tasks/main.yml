@@ -29,6 +29,7 @@
 - name: Install psutil python package
   pip:
     name: psutil
+    executable: pip3
 
 - name: Check if VM ssh port is open
   wait_for:
@@ -131,6 +132,30 @@
     src: "{{ image_mount_point }}/boot/vmlinuz"
     dest: /opt/vmlinuz
     remote_src: yes
+
+- name: Install Qemu packages
+  package:
+    name:
+      - qemu
+      - binfmt-support
+      - qemu-user-static
+      - qemu-utils
+      - qemu-efi-aarch64
+      - qemu-system-arm
+
+- name: Copy 'qemu-arm-static'
+  copy:
+    src: /usr/bin/qemu-arm-static
+    dest:  "{{ image_mount_point }}/usr/bin"
+    remote_src: yes
+    mode: u+rwx,g+rx,o+rx
+
+- name: Copy 'qemu-aarch64-static'
+  copy:
+    src: /usr/bin/qemu-aarch64-static
+    dest:  "{{ image_mount_point }}/usr/bin"
+    remote_src: yes
+    mode: u+rwx,g+rx,o+rx
 
 - name: Create a user for the cluster
   user:
