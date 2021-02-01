@@ -7,7 +7,7 @@
 
 - name: Add hostname to hosts
   lineinfile:
-    path: "{{ image_mount_point }}/etc/hosts"
+    path: "/etc/hosts"
     line: "{{ item }}"
   with_items:
-    - "127.0.0.1 {{ ansible_hostname }}"
+    - "127.0.0.1 {{ inventory_hostname }}"

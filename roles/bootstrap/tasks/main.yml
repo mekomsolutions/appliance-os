@@ -7,17 +7,14 @@
     dest: /opt/os-origin.img.xz
   register: download
 
-- name: Install Kpartx package
+- name: Install system packages
   package:
-    name: kpartx
-    state: present
+    name:
+    - kpartx
+    - python3-pip
+    update_cache: yes
 
-- name: Install pip package
-  package:
-    name: python3-pip
-    state: present
-
-- name: Check that the somefile.conf exists
+- name: Check that os-origin.img exists
   stat:
     path: /opt/os-origin.img
   register: unziped_image
@@ -26,7 +23,7 @@
   shell: "unxz --keep /opt/os-origin.img.xz"
   when: unziped_image.stat.exists == false
 
-- name: Install psutil python package
+- name: Install 'psutil' python package
   pip:
     name: psutil
     executable: pip3
@@ -157,37 +154,37 @@
     remote_src: yes
     mode: u+rwx,g+rx,o+rx
 
-- name: Create a user for the cluster
+- name: "Create the '{{ cluster_user }}' user"
   user:
     name: "{{ cluster_user }}"
     comment: Cluster User with root access
     uid: 1041
     group: root
 
-- name: Create cluster user in chroot filesystem
+- name: "Create the '{{ cluster_user }}' user in chroot filesystem"
   shell: chroot {{ image_mount_point }} useradd -u 1041 -m {{ cluster_user }}
   become: yes
 
-- name: "Create home folder"
+- name: "Create home folder for {{ cluster_user }}"
   file:
     path: "{{ image_mount_point }}/home/{{ cluster_user }}"
     state: directory
     owner: "{{ cluster_user }}"
 
-- name: "Create '.ssh/' folder"
+- name: "Create '.ssh/' folder for '{{ cluster_user }}' user"
   file:
     path: "{{ image_mount_point }}/home/{{ cluster_user }}/.ssh"
     state: directory
     owner: "{{ cluster_user }}"
 
-- name: Add user to sudoers
+- name: "Add '{{ cluster_user }}' user to sudoers"
   lineinfile:
     path: "{{ image_mount_point }}/etc/sudoers"
     line: "{{ item }}"
   with_items:
     - "{{ cluster_user }} ALL=(ALL) NOPASSWD: ALL"
  
-- name: Add ssh key to cluster user
+- name: "Add SSH key to '{{ cluster_user }}' user"
   copy:
     src: "/home/{{ ansible_ssh_user }}/.ssh/authorized_keys"
     dest: "{{ image_mount_point }}/home/{{ cluster_user }}/.ssh/authorized_keys"
