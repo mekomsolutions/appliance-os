@@ -14,15 +14,12 @@
     state: present
     reload: yes
 
-- name: "Delete 'k3s' if already present"
-  file:
-    path: /usr/local/bin/k3s
-    state: absent
-
 - name: Download K3s binary for 'arm64' architecture
   get_url:
-    url: https://github.com/rancher/k3s/releases/download/{{ k3s_version }}/k3s-arm64
+    url: "{{ k3s_download_url }}"
+    checksum: "{{ k3s_binary_checksum }}"
     dest: /usr/local/bin/k3s
     owner: root
     group: root
     mode: 0755
+  

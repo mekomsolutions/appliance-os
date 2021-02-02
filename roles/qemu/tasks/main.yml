@@ -20,4 +20,5 @@
 - name: Wait for Qemu VM machine to be available
   wait_for:
     port: "{{ image_ssh_port }}"
-    delay: 200
+    connect_timeout: 20
+    timeout: 400

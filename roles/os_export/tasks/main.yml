@@ -1,4 +1,17 @@
 ---
 
-- name: Reboot the image
-  reboot:
+- name: Ensure OS image is unmounted
+  ansible.posix.mount:
+    path: "{{ image_mount_point }}"
+    state: unmounted
+
+- name: Compress the OS image
+  community.general.archive:
+    path: /opt/os.img
+    dest: /opt/os.img.xz
+    format: xz
+
+- name: Fetch the OS image
+  fetch:
+    src: /opt/os.img.xz
+    dest: /tmp/ubuntu-rpi.img.xz

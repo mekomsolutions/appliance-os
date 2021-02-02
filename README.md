@@ -34,3 +34,5 @@ Run the playbook:
 ```bash
 ansible-playbook playbook.yml -i inventory/sample/hosts.ini --extra-vars "cluster_master_token=$CLUSTER_TOKEN"
 ```
+
+The OS image will be in the host machine: `/opt/os.img.xz`
