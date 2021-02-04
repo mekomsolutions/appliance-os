@@ -1,17 +1,33 @@
 ---
 
-- name: Copy K3s service file
-  register: k3s_service
-  template:
-    src: "k3s.service.j2"
-    dest: "{{ systemd_dir }}/k3s.service"
-    owner: root
-    group: root
-    mode: 0755
+- name: Set hostname
+  hostname:
+    name: "{{ inventory_hostname }}"
 
-- name: Ensure K3s service is enabled and started
+- name: Add hostname to hosts
+  lineinfile:
+    path: "/etc/hosts"
+    line: "{{ item }}"
+  with_items:
+    - "127.0.0.1 {{ inventory_hostname }}"
+
+- name: Ensure K3s node service is disabled
+  systemd:
+    name: k3s-node
+    daemon_reload: yes
+    state: stopped
+    enabled: no
+
+- name: Ensure K3s master service is enabled
   systemd:
     name: k3s
     daemon_reload: yes
     state: started
     enabled: yes
+
+- name: Compress the OS image
+  community.general.archive:
+    path: /opt/os.img
+    dest: "/opt/ubuntu-{{ inventory_hostname }}.img.xz"
+    format: xz
+  delegate_to: "{{ groups['vm'][0] }}"

@@ -21,7 +21,7 @@ Retrieve the machine IP
 multipass info os-builder | grep IPv4
 ```
 
-Edit the [hosts.ini](inventory/sample/hosts.ini) file with the retrieved IP.
+Edit the `host` variable in [all.yml](inventory/sample/group_vars/all.yml) file with the retrieved IP.
 
 Set the the cluster token value
 
@@ -32,7 +32,7 @@ export CLUSTER_TOKEN=<token>
 Run the playbook:
 
 ```bash
-ansible-playbook playbook.yml -i inventory/sample/hosts.ini --extra-vars "cluster_master_token=$CLUSTER_TOKEN"
+ansible-playbook playbook.yml -i inventory/sample/hosts.yml --extra-vars "cluster_master_token=$CLUSTER_TOKEN"
 ```
 
-The OS image will be in the host machine: `/opt/os.img.xz`
+The OS images will be in the local machine under: `target/` folders

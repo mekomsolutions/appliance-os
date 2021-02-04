@@ -4,13 +4,7 @@
   apt:
     name: net-tools
     state: present
-
-- name: Add hostname to hosts
-  lineinfile:
-    path: "/etc/hosts"
-    line: "{{ item }}"
-  with_items:
-    - "127.0.0.1 {{ inventory_hostname }}"
+    update-cache: yes
 
 - name: Ensure default ubuntu user is removed
   user:
@@ -18,7 +12,7 @@
     state: absent
     remove: yes
 
-- name: "Ensure {{ cluster_user }} have a default password"
+- name: "Ensure '{{ cluster_user }}' have a default password"
   user:
     name: "{{ cluster_user }}"
     state: present

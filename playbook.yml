@@ -1,4 +1,5 @@
 ---
+
 - hosts: vm
   gather_facts: no
   become: true
@@ -6,7 +7,7 @@
     - role: bootstrap
     - role: qemu
 
-- hosts: cluster
+- hosts: cluster[0]
   gather_facts: no
   become: true
   roles:
@@ -15,15 +16,21 @@
     - role: k3s/install
 
 - hosts: master
+  serial: 1
   gather_facts: no
   become: true
   roles:
     - role: k3s/master
-    - role: clean
 
 - hosts: node
+  serial: 1
   gather_facts: no
   become: true
   roles:
     - role: k3s/node
-    - role: clean
+
+- hosts: vm
+  gather_facts: no
+  become: true
+  roles:
+    - role: os_export

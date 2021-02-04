@@ -1,17 +1,6 @@
 ---
 
-- name: Ensure OS image is unmounted
-  ansible.posix.mount:
-    path: "{{ image_mount_point }}"
-    state: unmounted
-
-- name: Compress the OS image
-  community.general.archive:
-    path: /opt/os.img
-    dest: /opt/os.img.xz
-    format: xz
-
-- name: Fetch the OS image
+- name: Retrieve the OS images from the VM
   fetch:
-    src: /opt/os.img.xz
-    dest: /tmp/ubuntu-rpi.img.xz
+    src: /opt/ubuntu-*.img.xz
+    dest: /tmp/

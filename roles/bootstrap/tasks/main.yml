@@ -14,7 +14,7 @@
     - python3-pip
     update_cache: yes
 
-- name: Check that os-origin.img exists
+- name: Check that 'os-origin.img' exists
   stat:
     path: /opt/os-origin.img
   register: unziped_image
@@ -154,18 +154,18 @@
     remote_src: yes
     mode: u+rwx,g+rx,o+rx
 
-- name: "Create the '{{ cluster_user }}' user"
+- name: "Create the Admin user with root access"
   user:
     name: "{{ cluster_user }}"
     comment: Cluster User with root access
-    uid: 1041
+    uid: "{{ cluster_user_id }}"
     group: root
 
 - name: "Create the '{{ cluster_user }}' user in chroot filesystem"
-  shell: chroot {{ image_mount_point }} useradd -u 1041 -m {{ cluster_user }}
+  shell: chroot {{ image_mount_point }} useradd -u {{ cluster_user_id }} -m {{ cluster_user }}
   become: yes
 
-- name: "Create home folder for {{ cluster_user }}"
+- name: "Create home folder for '{{ cluster_user }}'"
   file:
     path: "{{ image_mount_point }}/home/{{ cluster_user }}"
     state: directory
