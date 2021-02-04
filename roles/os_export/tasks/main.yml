@@ -1,0 +1,6 @@
+---
+
+- name: Retrieve the OS images from the VM
+  ansible.posix.synchronize:
+    src: /opt/ubuntu-*.img.xz
+    dest: target/

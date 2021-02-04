@@ -1,0 +1,24 @@
+---
+
+
+- name: Enable cgroup via boot command line
+  lineinfile:
+    path: "{{ image_mount_point }}/boot/firmware/cmdline.txt"
+    backrefs: yes
+    regexp: '^((?!.*\bcgroup_enable=cpuset cgroup_memory=1 cgroup_enable=memory\b).*)$'
+    line: '\1 cgroup_enable=cpuset cgroup_memory=1 cgroup_enable=memory'
+
+- name: Unmount the image
+  ansible.posix.mount:
+    path: /tmp/os
+    state: unmounted
+
+- name: Run Qemu VM
+  shell: qemu-system-aarch64 -M virt -m 1024 -smp 4 -cpu cortex-a53 -kernel /opt/vmlinuz -initrd /opt/initrd.img -net tap -net nic -drive file=/opt/os.img,if=none,id=drive0,cache=writeback -device virtio-blk-device,drive=drive0,bootindex=0 -append 'root=/dev/vda2 noresume rw cgroup_enable=cpuset cgroup_memory=1 cgroup_enable=memory' -no-reboot -netdev user,id=net1,hostfwd=tcp::{{ image_ssh_port }}-:22 -device virtio-net-device,netdev=net1 -daemonize -display none
+  become: true
+
+- name: Wait for Qemu VM machine to be available
+  wait_for:
+    port: "{{ image_ssh_port }}"
+    connect_timeout: 20
+    timeout: 400

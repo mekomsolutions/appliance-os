@@ -1,11 +1,20 @@
 ---
-- debug:
-    msg: "{{ansible_architecture}}"
 
-- name: Update apt cache
+- name: Install network tools
   apt:
+    name: net-tools
+    state: present
     update-cache: yes
 
-- name: Set the hostname as inventory name
-  hostname:
-    name: "{{inventory_hostname}}"
+- name: Ensure default ubuntu user is removed
+  user:
+    name: ubuntu
+    state: absent
+    remove: yes
+
+- name: "Ensure '{{ cluster_user }}' have a default password"
+  user:
+    name: "{{ cluster_user }}"
+    state: present
+    password: "{{ 'cluster_user_password' | password_hash('sha512') }}"
+

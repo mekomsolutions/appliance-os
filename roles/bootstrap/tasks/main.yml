@@ -1,4 +1,5 @@
 ---
+
 - name: Download RPi OS image
   get_url:
     url: "{{ rpi_os_image_url }}"
@@ -6,13 +7,52 @@
     dest: /opt/os-origin.img.xz
   register: download
 
-- name: Install Kpartx package
+- name: Install system packages
   package:
-    name: kpartx
-    state: present
+    name:
+    - kpartx
+    - python3-pip
+    update_cache: yes
+
+- name: Check that 'os-origin.img' exists
+  stat:
+    path: /opt/os-origin.img
+  register: unziped_image
+
 - name: Unarchive the image
   shell: "unxz --keep /opt/os-origin.img.xz"
-  when: download.changed
+  when: unziped_image.stat.exists == false
+
+- name: Install 'psutil' python package
+  pip:
+    name: psutil
+    executable: pip3
+
+- name: Check if VM ssh port is open
+  wait_for:
+    host: localhost
+    port: "{{ image_ssh_port }}"
+    state: started
+    delay: 0
+    timeout: 3
+  ignore_errors: yes
+  register: vm_port_status
+
+- name: Getting process IDs of the process
+  community.general.pids:
+      name: qemu-system-aarch64
+  register: pids_of_qemu
+  when: vm_port_status is succeeded
+
+- name: Kill qemu process
+  shell: kill -9 {{ pids_of_qemu.pids[0] }}
+  become: true
+  when: vm_port_status is succeeded
+
+- name: Wait for machine to turn off
+  wait_for:
+    timeout: 10
+  when: vm_port_status is succeeded
 
 - name: Make a copy of the file
   shell: "cp /opt/os-origin.img /opt/os.img"
@@ -78,10 +118,16 @@
     path: "{{ image_mount_point }}"
     state: mounted
 
-- name: Copy /etc/resolve.conf from host
+- name: Copy initrd.img
   copy:
-    src: /etc/resolv.conf
-    dest: "{{ image_mount_point }}/etc/resolv.conf"
+    src: "{{ image_mount_point }}/boot/initrd.img"
+    dest: /opt/initrd.img
+    remote_src: yes
+
+- name: Copy vmlinux
+  copy:
+    src: "{{ image_mount_point }}/boot/vmlinuz"
+    dest: /opt/vmlinuz
     remote_src: yes
 
 - name: Install Qemu packages
@@ -108,18 +154,39 @@
     remote_src: yes
     mode: u+rwx,g+rx,o+rx
 
-- name: Mount host '/proc' folder
-  ansible.posix.mount:
-    path: "{{ image_mount_point }}/proc"
-    src: /proc
-    opts: bind
-    state: mounted
-    fstype: none
+- name: "Create the Admin user with root access"
+  user:
+    name: "{{ cluster_user }}"
+    comment: Cluster User with root access
+    uid: "{{ cluster_user_id }}"
+    group: root
 
-- name: Mount host '/dev' folder
-  ansible.posix.mount:
-    path: "{{ image_mount_point }}/dev"
-    src: /dev
-    opts: bind
-    state: mounted
-    fstype: none
+- name: "Create the '{{ cluster_user }}' user in chroot filesystem"
+  shell: chroot {{ image_mount_point }} useradd -u {{ cluster_user_id }} -m {{ cluster_user }}
+  become: yes
+
+- name: "Create home folder for '{{ cluster_user }}'"
+  file:
+    path: "{{ image_mount_point }}/home/{{ cluster_user }}"
+    state: directory
+    owner: "{{ cluster_user }}"
+
+- name: "Create '.ssh/' folder for '{{ cluster_user }}' user"
+  file:
+    path: "{{ image_mount_point }}/home/{{ cluster_user }}/.ssh"
+    state: directory
+    owner: "{{ cluster_user }}"
+
+- name: "Add '{{ cluster_user }}' user to sudoers"
+  lineinfile:
+    path: "{{ image_mount_point }}/etc/sudoers"
+    line: "{{ item }}"
+  with_items:
+    - "{{ cluster_user }} ALL=(ALL) NOPASSWD: ALL"
+ 
+- name: "Add SSH key to '{{ cluster_user }}' user"
+  copy:
+    src: "/home/{{ ansible_ssh_user }}/.ssh/authorized_keys"
+    dest: "{{ image_mount_point }}/home/{{ cluster_user }}/.ssh/authorized_keys"
+    owner: "{{ cluster_user }}"
+    remote_src: yes

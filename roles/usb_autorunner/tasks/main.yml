@@ -4,6 +4,7 @@
     name:
       - openssl
       - zip
+      - inotify-tools
 
 - name: Ensure 'usb-autorunner' installation directory exists
   file: 

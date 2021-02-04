@@ -1,0 +1,41 @@
+---
+
+- name: Enable IPv4 forwarding
+  sysctl:
+    name: net.ipv4.ip_forward
+    value: "1"
+    state: present
+    reload: yes
+
+- name: Enable IPv6 forwarding
+  sysctl:
+    name: net.ipv6.conf.all.forwarding
+    value: "1"
+    state: present
+    reload: yes
+
+- name: Download K3s binary for 'arm64' architecture
+  get_url:
+    url: "{{ k3s_download_url }}"
+    checksum: "{{ k3s_binary_checksum }}"
+    dest: /usr/local/bin/k3s
+    owner: root
+    group: root
+    mode: 0755
+  
+- name: Copy K3s master service file
+  register: k3s_service
+  template:
+    src: "k3s.service.j2"
+    dest: "{{ systemd_dir }}/k3s.service"
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Copy K3s node service file
+  template:
+    src: "k3s.service.j2"
+    dest: "{{ systemd_dir }}/k3s-node.service"
+    owner: root
+    group: root
+    mode: 0755
