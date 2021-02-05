@@ -18,3 +18,8 @@
     state: present
     password: "{{ 'cluster_user_password' | password_hash('sha512') }}"
 
+- name: Install system packages
+  apt:
+    pkg:
+    - unzip
+    - nfs-common
