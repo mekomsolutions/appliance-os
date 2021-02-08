@@ -1,3 +1,3 @@
 ---
 rpi_os_image_url: https://cdimage.ubuntu.com/releases/{{ ubuntu_version }}/release/ubuntu-{{ ubuntu_version }}-preinstalled-server-arm64+raspi.img.xz
-rpi_os_image_checksum: sha256:aadc64a1d069c842e56a4289fe1a6b4b5a0af4efcf95bcce78eb2a80fe5270f4
+rpi_os_image_checksum: sha256:31884b07837099a5e819527af66848a9f4f92c1333e3ef0693d6d77af66d6832
