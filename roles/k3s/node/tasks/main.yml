@@ -27,6 +27,6 @@
 - name: Compress the OS image
   community.general.archive:
     path: /opt/os.img
-    dest: "/opt/ubuntu-{{ ubuntu_version }}-{{ inventory_hostname }}-{{ rpi_static_ip }}.img.xz"
-    format: xz
+    dest: "/opt/ubuntu-{{ ubuntu_version }}-{{ inventory_hostname }}-{{ rpi_static_ip }}.zip"
+    format: zip
   delegate_to: "{{ groups['vm'][0] }}"
