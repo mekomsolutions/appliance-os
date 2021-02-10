@@ -13,21 +13,21 @@
   roles:
     - role: common
     - role: usb_autorunner
-    - role: k3s/common
+    - role: k3s/install
 
 - hosts: master
   serial: 1
   gather_facts: no
   become: true
   roles:
-    - role: k3s/setup
+    - role: k3s
 
 - hosts: node
   serial: 1
   gather_facts: no
   become: true
   roles:
-    - role: k3s/setup
+    - role: k3s
 
 - hosts: vm
   gather_facts: no
