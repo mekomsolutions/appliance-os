@@ -183,10 +183,20 @@
     line: "{{ item }}"
   with_items:
     - "{{ cluster_user }} ALL=(ALL) NOPASSWD: ALL"
- 
+
 - name: "Add SSH key to '{{ cluster_user }}' user"
   copy:
     src: "/home/{{ ansible_ssh_user }}/.ssh/authorized_keys"
     dest: "{{ image_mount_point }}/home/{{ cluster_user }}/.ssh/authorized_keys"
     owner: "{{ cluster_user }}"
     remote_src: yes
+
+- name: "Prepare '{{ os_images_artifacts_directory }}/' directory (wipe first)"
+  file:
+    path: "{{ os_images_artifacts_directory }}"
+    state: absent
+
+- name: "Prepare '{{ os_images_artifacts_directory }}/' directory (create)"
+  file:
+    path: "{{ os_images_artifacts_directory }}"
+    state: directory
