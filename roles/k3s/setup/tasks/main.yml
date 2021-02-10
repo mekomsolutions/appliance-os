@@ -15,14 +15,29 @@
   systemd:
     name: k3s
     daemon_reload: yes
-    state: stopped
     enabled: no
+  when: not master_service
+
+- name: Ensure K3s master service is enabled
+  systemd:
+    name: k3s
+    daemon_reload: yes
+    enabled: yes
+  when: master_service
+
+- name: Ensure K3s node service is disabled
+  systemd:
+    name: k3s-node
+    daemon_reload: yes
+    enabled: no
+  when: not node_service
 
 - name: Ensure K3s node service is enabled
   systemd:
     name: k3s-node
     daemon_reload: yes
     enabled: yes
+  when: node_service
 
 - name: Compress the OS image
   community.general.archive:

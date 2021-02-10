@@ -1,0 +1,7 @@
+---
+
+ansible_port: "{{ image_ssh_port }}"
+ansible_host: "{{ vm_ip }}"
+ansible_user: "{{ cluster_user }}"
+master_service: no
+node_service: yes

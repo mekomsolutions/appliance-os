@@ -1,0 +1,8 @@
+---
+
+ansible_port: "{{ image_ssh_port }}"
+ansible_host: "{{ vm_ip }}"
+ansible_user: "{{ cluster_user }}"
+rpi_static_ip: "{{ master_static_ip }}"
+master_service: yes
+node_service: no
