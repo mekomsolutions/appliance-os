@@ -6,6 +6,11 @@
     state: present
     update-cache: yes
 
+- name: Install 'skopeo'
+  apt:
+    name: skopeo
+    state: present
+  
 - name: Ensure default ubuntu user is removed
   user:
     name: ubuntu
