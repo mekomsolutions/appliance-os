@@ -11,18 +11,17 @@
   with_items:
     - "127.0.0.1 {{ inventory_hostname }}"
 
-- name: Ensure K3s master service is disabled
+- name: "Ensure K3s master service is 'enabled: {{ k3s_master_service_status }}'"
   systemd:
     name: k3s
     daemon_reload: yes
-    state: stopped
-    enabled: no
+    enabled: "{{ k3s_master_service_status }}"
 
-- name: Ensure K3s node service is enabled
+- name: "Ensure K3s node service is 'enabled: {{ k3s_node_service_status }}'"
   systemd:
     name: k3s-node
     daemon_reload: yes
-    enabled: yes
+    enabled: "{{ k3s_node_service_status }}"
 
 - name: Compress the OS image
   community.general.archive:

@@ -20,14 +20,14 @@
   gather_facts: no
   become: true
   roles:
-    - role: k3s/master
+    - role: k3s
 
 - hosts: node
   serial: 1
   gather_facts: no
   become: true
   roles:
-    - role: k3s/node
+    - role: k3s
 
 - hosts: vm
   gather_facts: no
