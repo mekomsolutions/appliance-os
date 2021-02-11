@@ -7,7 +7,7 @@
       - inotify-tools
 
 - name: Ensure 'usb-autorunner' installation directory exists
-  file: 
+  file:
     path: "{{ usb_autorunner_install_path }}"
     state: directory
 
@@ -72,8 +72,5 @@
 - name: Encrypt the file
   shell: openssl aes-256-cbc -pbkdf2 -in {{ temp_test_folder.path }}/startup.zip -out {{ temp_test_folder.path }}/startup.zip.enc -pass file:{{ temp_test_folder.path }}/secret.key
 
-- name: Testing the service
+- name: Test the service
   shell: "{{ usb_autorunner_install_path }}/autorunner.sh {{ temp_test_folder.path }}"
-  register: test_result
-
-- debug: msg="{{ test_result.stdout }}"
