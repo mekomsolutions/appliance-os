@@ -1,20 +1,12 @@
 ---
 
-- name: Create '/boot/firmware/' directory
-  file:
-    path: /boot/firmware/
-    state: directory
-
-- name: Configure boot options (enable cgroup)
-  shell: "echo '{{ boot_options }}' > /boot/firmware/cmdline.txt"
-
 - name: Unmount the image
   ansible.posix.mount:
     path: /tmp/os
     state: unmounted
 
 - name: Run Qemu VM
-  shell: qemu-system-aarch64 -M virt -m 1024 -smp 4 -cpu cortex-a53 -kernel /opt/vmlinuz -initrd /opt/initrd.img -net tap -net nic -drive file=/opt/os.img,if=none,id=drive0,cache=writeback -device virtio-blk-device,drive=drive0,bootindex=0 -append 'root=/dev/vda2 noresume rw cgroup_enable=cpuset cgroup_memory=1 cgroup_enable=memory' -no-reboot -netdev user,id=net1,hostfwd=tcp::{{ image_ssh_port }}-:22 -device virtio-net-device,netdev=net1 -daemonize -display none
+  shell: qemu-system-aarch64 -M virt -m 4G -smp 8 -cpu cortex-a53 -kernel /opt/vmlinuz -initrd /opt/initrd.img -net tap -net nic -drive file=/opt/os.img,if=none,id=drive0,cache=writeback -device virtio-blk-device,drive=drive0,bootindex=0 -append 'root=/dev/vda2 noresume rw cgroup_enable=cpuset cgroup_memory=1 cgroup_enable=memory' -no-reboot -netdev user,id=net1,hostfwd=tcp::{{ image_ssh_port }}-:22 -device virtio-net-device,netdev=net1 -daemonize -display none
   become: true
 
 - name: Wait for Qemu VM machine to be available
