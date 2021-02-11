@@ -1,5 +1,13 @@
 ---
 
+- name: Create '/boot/firmware/' directory
+  file:
+    path: /boot/firmware/
+    state: directory
+
+- name: Configure boot options (enable cgroup)
+  shell: "echo '{{ boot_options }}' > /boot/firmware/cmdline.txt"
+
 - name: Install network tools
   apt:
     name: net-tools
