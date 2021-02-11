@@ -1,7 +1,7 @@
 ---
 
-- name: Retrieve the OS images from the VM
-  ansible.posix.synchronize:
-    mode: pull
-    src: "/opt/ubuntu-{{ ubuntu_version }}-*.zip"
-    dest: target/
+- name: OS images ready!
+  debug:
+    msg:
+      - "OS images are ready. They can be fetched them with:"
+      - "rsync -r -e 'ssh -p {{ansible_port}}' --progress {{ansible_user}}@{{ansible_host}}:{{ os_images_artifacts_directory }}/ target/"
