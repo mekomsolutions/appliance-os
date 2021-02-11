@@ -1,12 +1,12 @@
 ---
 
+- name: Create '/boot/firmware/' directory
+  file:
+    path: /boot/firmware/
+    state: directory
 
-- name: Enable cgroup via boot command line
-  lineinfile:
-    path: "{{ image_mount_point }}/boot/firmware/cmdline.txt"
-    backrefs: yes
-    regexp: '^((?!.*\bcgroup_enable=cpuset cgroup_memory=1 cgroup_enable=memory\b).*)$'
-    line: '\1 cgroup_enable=cpuset cgroup_memory=1 cgroup_enable=memory'
+- name: Configure boot options (enable cgroup)
+  shell: "echo '{{ boot_options }}' > /boot/firmware/cmdline.txt"
 
 - name: Unmount the image
   ansible.posix.mount:
