@@ -10,7 +10,7 @@ k3s_version: v1.19.7+k3s1
 k3s_binary_checksum: ""
 systemd_dir: /etc/systemd/system
 image_ssh_port: 5555
-cluster_master_token: "{{ token }}"
+cluster_token: "{{ token }}"
 master_static_ip: 10.0.0.10
 usb_autorunner_install_path: /opt/autorunner
 ubuntu_version: 20.04.2

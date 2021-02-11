@@ -30,7 +30,7 @@ export CLUSTER_TOKEN=<token>
 Run the playbook:
 
 ```bash
-ansible-playbook playbook.yml -i inventory/sample/hosts.yml --extra-vars "cluster_master_token=$CLUSTER_TOKEN vm_ip=<set vm IP>"
+ansible-playbook playbook.yml -i inventory/sample/hosts.yml --extra-vars "cluster_token=$CLUSTER_TOKEN vm_ip=<set vm IP>"
 ```
 
 The OS images will be in the local machine under: `target/` folders

@@ -1,5 +1,14 @@
 ---
 
+- hosts: localhost
+  gather_facts: no
+  tasks:
+    - fail:
+        msg: "'cluster_token' variable is empty or null. Eg, pass it as a command line argument: '--extra-args cluster_token=a7b4aa66-9573-4906-b656-fa5db0ba0dec'"
+      when:
+        - cluster_token == ""
+        - not cluster_token
+
 - hosts: vm
   gather_facts: no
   become: true
