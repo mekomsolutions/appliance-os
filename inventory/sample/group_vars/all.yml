@@ -1,6 +1,6 @@
 ---
 
-vm_ip: 54.246.233.169
+vm_ip:
 force_handlers: True
 image_mount_point: /mnt/os
 cluster_user: mekom

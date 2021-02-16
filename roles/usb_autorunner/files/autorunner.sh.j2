@@ -12,7 +12,7 @@ USB_DATA_PATH=$1
 if [ ! -r $USB_DATA_PATH/$KEY_FILENAME ]
 then
   echo "key file is missing, exiting"
-  exit
+  exit -1
 fi
 
 if [ -r $USB_DATA_PATH/$AUTORUN_FILENAME ]
@@ -30,14 +30,17 @@ then
   openssl enc -d -aes-256-cbc -pbkdf2 -in $autorun_file_path -out $AUTORUN_CONTENT_PATH/startup.zip -pass file:$AUTORUN_CONTENT_PATH/secret.key
 
   unzip -oq $AUTORUN_CONTENT_PATH/startup.zip -d $AUTORUN_CONTENT_PATH
+  exit
 
   if [ -r $AUTORUN_CONTENT_PATH/startup.sh ]
   then
     sh $AUTORUN_CONTENT_PATH/startup.sh
   else
     echo "startup.sh file not found!"
+    exit -1
   fi
 else
-  # Create Backup profile
+  # Create backup profile
   echo "no autorun defined, exiting"
+  exit -1
 fi

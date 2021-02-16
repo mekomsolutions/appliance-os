@@ -6,7 +6,7 @@ Ansible playbooks to configure a Kubernetes cluster node/master.
 Start Multipass machine locally:
 
 ```bash
-multipass launch -d 16G -m 4G -n os-builder -c 4
+multipass launch -d 16G -m 6G -n os-builder -c 4
 ```
 
 Paste your public key in:
