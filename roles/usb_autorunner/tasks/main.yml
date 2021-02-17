@@ -22,13 +22,15 @@
     state: directory
 
 - name: Create encryption private key
-  community.crypto.openssl_privatekey:
-    path: "{{ usb_autorunner_install_path }}/certificate/autorunner.pem"
+  copy:
+    src: certificate/autorunner.pem
+    dest: "{{ usb_autorunner_install_path }}/certificate/autorunner.pem"
+    mode: 0600
 
 - name: Create encryption public key
-  community.crypto.openssl_publickey:
-      path: "{{ usb_autorunner_install_path }}/certificate/autorunner.pub.pem"
-      privatekey_path: "{{ usb_autorunner_install_path }}/certificate/autorunner.pem"
+  copy:
+    src: certificate/autorunner.pub.pem
+    dest: "{{ usb_autorunner_install_path }}/certificate/autorunner.pub.pem"
 
 - name: Copy 'usb-discovery.service'
   template:
