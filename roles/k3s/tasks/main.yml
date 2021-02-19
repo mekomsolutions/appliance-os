@@ -4,12 +4,41 @@
   hostname:
     name: "{{ inventory_hostname }}"
 
-- name: Add hostname to hosts
+- name: Clear localhosts
+  lineinfile:
+    path: "/etc/hosts"
+    state: absent
+    regexp: '^127\.0\.0\.1 *'
+
+- name: Add hostname and localhost to hosts
   lineinfile:
     path: "/etc/hosts"
     line: "{{ item }}"
   with_items:
+    - "127.0.0.1 localhost"
     - "127.0.0.1 {{ inventory_hostname }}"
+
+- name: Ensure the cloud config directory exists
+  ansible.builtin.file:
+    path: /etc/cloud/cloud.cfg.d/
+    state: directory
+    mode: '0755'
+
+- name: Clear cloud network init config
+  copy:
+    dest: /etc/cloud/cloud.cfg.d/99-disable-network-config.cfg
+    content: "network: {config: disabled}"
+
+- name: "Ensure cloud network generated config file is absent"
+  ansible.builtin.file:
+    path: /etc/netplan/50-cloud-init.yaml
+    state: absent
+
+- name: Set appliance static IP
+  template:
+    src: files/00-appliance-init.yml.j2
+    dest: /etc/netplan/00-appliance-init.yml
+    force: yes
 
 - name: "Ensure K3s master service is 'enabled: {{ k3s_master_service_status }}'"
   systemd:

@@ -1,6 +1,5 @@
 ---
 
-vm_ip: 54.246.233.169
 force_handlers: True
 image_mount_point: /mnt/os
 cluster_user: mekom
@@ -11,7 +10,7 @@ k3s_binary_checksum: ""
 systemd_dir: /etc/systemd/system
 image_ssh_port: 5555
 cluster_token: "{{ token }}"
-master_static_ip: 10.0.0.10
+master_static_ip: "{{ hostvars[groups['master'][0]]['rpi_static_ip'] }}"
 usb_autorunner_install_path: /opt/autorunner
 ubuntu_version: 20.04.2
 os_images_artifacts_directory: /opt/artifacts
