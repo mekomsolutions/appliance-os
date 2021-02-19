@@ -34,10 +34,17 @@
     name: "{{ cluster_user }}"
     state: present
     shell: /bin/bash
-    password: "{{ 'cluster_user_password' | password_hash('sha512') }}"
+    password: "{{ 'cluster_user_password' }}"
 
 - name: Install system packages
   apt:
     pkg:
     - unzip
     - nfs-common
+
+- name: Auto-mount 'cluster-disk' when 'has_disk' is true
+  lineinfile:
+    path: /etc/fstab
+    regexp: "LABEL=cluster-disk"
+    line: "LABEL=cluster-disk       /mnt/disks/ssd1  ext4    defaults        0       1"
+  when: has_disk|default(false)|bool == true
