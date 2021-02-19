@@ -21,6 +21,12 @@ Retrieve the machine IP
 multipass info os-builder | grep IPv4
 ```
 
+Set the the host VM IP Value retrieved from the multipass
+
+```bash
+export HOST_VM_IP=<set vm IP>
+```
+
 Set the the cluster token value
 
 ```bash
@@ -30,7 +36,7 @@ export CLUSTER_TOKEN=<token>
 Run the playbook:
 
 ```bash
-ansible-playbook playbook.yml -i inventory/sample/hosts.yml --extra-vars "cluster_token=$CLUSTER_TOKEN vm_ip=<set vm IP>"
+ansible-playbook playbook.yml -i inventory/sample/hosts.yml --extra-vars "cluster_token=$CLUSTER_TOKEN vm_ip=$HOST_VM_IP"
 ```
 
 The OS images will be in the local machine under: `target/` folders
