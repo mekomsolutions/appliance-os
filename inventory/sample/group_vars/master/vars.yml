@@ -6,4 +6,6 @@ ansible_user: "{{ cluster_user }}"
 rpi_static_ip: "{{ master_static_ip }}"
 k3s_master_service_status: yes
 k3s_node_service_status: no
-has_disk: true
+cluster_disk: present
+cluster_disk_mount_point: /mnt/disks/ssd1
+cluster_disk_label: cluster-disk
