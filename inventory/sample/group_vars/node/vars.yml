@@ -5,3 +5,4 @@ ansible_host: "{{ vm_ip }}"
 ansible_user: "{{ cluster_user }}"
 k3s_master_service_status: no
 k3s_node_service_status: yes
+ansible_ssh_extra_args: '-o StrictHostKeyChecking=no'

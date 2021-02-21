@@ -1,5 +1,4 @@
 ---
-
 ansible_port: "{{ image_ssh_port }}"
 ansible_host: "{{ vm_ip }}"
 ansible_user: "{{ cluster_user }}"
@@ -9,3 +8,4 @@ k3s_node_service_status: no
 cluster_disk: present
 cluster_disk_mount_point: /mnt/disks/ssd1
 cluster_disk_label: cluster-disk
+ansible_ssh_extra_args: '-o StrictHostKeyChecking=no'

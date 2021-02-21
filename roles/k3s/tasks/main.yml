@@ -36,9 +36,10 @@
 
 - name: Set appliance static IP
   template:
-    src: files/00-appliance-init.yml.j2
-    dest: /etc/netplan/00-appliance-init.yml
+    src: files/00-appliance-init.yaml.j2
+    dest: /etc/netplan/00-appliance-init.yaml
     force: yes
+    mode: 640
 
 - name: "Ensure K3s master service is 'enabled: {{ k3s_master_service_status }}'"
   systemd:
