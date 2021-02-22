@@ -1,4 +1,4 @@
-### appliance-os
+## appliance-os
 
 Ansible playbooks to configure Mekom's appliance Operating System.
 
@@ -6,7 +6,7 @@ Key features of the OS are:
 - Kubernetes cluster
 - Autorunner service
 
-
+### Optional, start a VM with Multipass
 
 Start Multipass machine locally:
 
@@ -26,6 +26,8 @@ Retrieve the machine IP to further set the `vm_ip` variable.
 multipass info os-builder | grep IPv4
 ```
 
+### Generate token
+
 Genete a token for the nodes to auto join the master:
 on MacOS:
 ```
@@ -35,6 +37,9 @@ On Linux
 ```
 uuid
 ```
+
+### Set mandatory variables
+
 Compulsory variables:
 
 | Variable name  | Description |
@@ -44,10 +49,12 @@ Compulsory variables:
 | `gateway_ip`  | The IP address of the production router |
 | `rpi_static_ip`  | Host-specific IP of each RPi, **to be set in the hosts.yml file** |
 
+
+### Run the playbook
+
 Run the playbook by replacing all the variable accordingly:
 
 ```bash
 ansible-playbook playbook.yml -i inventory/sample/hosts.yml --extra-vars "cluster_token=<cluster_token> vm_ip=<host_vm_ip> gateway_ip=<gateway_ip>"
 ```
 
-The OS images will be in the local machine under: `target/` folders
