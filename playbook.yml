@@ -20,7 +20,7 @@
     - role: bootstrap
     - role: qemu
 
-- hosts: cluster[0]
+- hosts: cluster
   gather_facts: no
   become: true
   roles:
@@ -29,14 +29,12 @@
     - role: k3s/install
 
 - hosts: master
-  serial: 1
   gather_facts: no
   become: true
   roles:
     - role: k3s
 
 - hosts: node
-  serial: 1
   gather_facts: no
   become: true
   roles:
@@ -47,3 +45,11 @@
   become: true
   roles:
     - role: os_export
+
+- hosts: vm
+  tasks:  
+    - name: OS images ready!
+      debug:
+        msg:
+          - "OS images are ready. They can be fetched them with:"
+          - "rsync -r -e 'ssh -p {{ansible_port}}' --progress {{ansible_user}}@{{ansible_host}}:{{ os_images_artifacts_directory }}/ target/"
