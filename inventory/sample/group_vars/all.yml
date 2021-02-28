@@ -15,3 +15,5 @@ public_dns_ips: "208.67.222.222, 208.67.220.220"
 usb_autorunner_install_path: /opt/autorunner
 ubuntu_version: 20.04.2
 os_images_artifacts_directory: /opt/artifacts
+metallb_addresses:
+   - 10.0.90.10-10.0.90.99

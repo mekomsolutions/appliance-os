@@ -33,6 +33,7 @@
   become: true
   roles:
     - role: k3s
+    - role: k3s/metallb
 
 - hosts: node
   gather_facts: no
@@ -47,7 +48,7 @@
     - role: os_export
 
 - hosts: vm
-  tasks:  
+  tasks:
     - name: OS images ready!
       debug:
         msg:

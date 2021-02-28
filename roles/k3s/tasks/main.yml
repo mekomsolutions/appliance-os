@@ -41,14 +41,26 @@
     force: yes
     mode: 640
 
-- name: "Ensure K3s master service is 'enabled: {{ k3s_master_service_status }}'"
+- name: "Ensure K3s master service is enabled and started (fire and forget)"
   systemd:
     name: k3s
     daemon_reload: yes
-    enabled: "{{ k3s_master_service_status }}"
+    enabled: yes
+    state: "started"
+    no_block: yes
+  when: is_master
 
-- name: "Ensure K3s node service is 'enabled: {{ k3s_node_service_status }}'"
+- name: "Ensure K3s node service is enabled"
   systemd:
     name: k3s-node
     daemon_reload: yes
-    enabled: "{{ k3s_node_service_status }}"
+    enabled: yes
+  when: not is_master
+
+- name: "Wait for K3s master to start"
+  shell: k3s kubectl get nodes
+  register: result
+  until: result.rc == 0
+  retries: 30
+  delay: 5
+  when: is_master

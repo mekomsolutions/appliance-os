@@ -1,0 +1,30 @@
+---
+
+- name: Copy MetalLB resources
+  template:
+    src: "{{ item }}"
+    dest: /opt/metallb/
+  with_fileglob:
+    - "files/*"
+
+- name: Apply MetalLB files
+  shell: "k3s kubectl apply -f /opt/metallb"
+
+- name: Find out if 'memberlist' secret is already present
+  shell: k3s kubectl get secrets memberlist -n metallb-system -o json
+  register: get_memberlist
+  ignore_errors: yes
+
+- name: Create the needed 'memberlist' secret
+  shell: k3s kubectl create secret generic -n metallb-system memberlist --from-literal=secretkey="$(openssl rand -base64 128)"
+  when: get_memberlist.rc != 0
+
+- name: Wait for MetalLB pods to be 'Running'
+  shell: k3s kubectl get pods -n metallb-system -o json
+  register: pod_status
+  until: "pod_status.stdout | from_json | json_query(query) == 'Running'"
+  vars:
+    query: 'items[?metadata.labels.component==`{{item}}`] | [?metadata.labels.app==`metallb`] | [0].status.phase'
+  loop:
+    - controller
+    - speaker

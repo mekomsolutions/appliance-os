@@ -28,21 +28,10 @@
     name: psutil
     executable: pip3
 
-- name: Check if VM ssh port is open
-  wait_for:
-    host: localhost
-    port: "{{ image_ssh_port }}"
-    state: started
-    delay: 0
-    timeout: 3
-  ignore_errors: yes
-  register: vm_port_status
-
-- name: Getting process IDs of the process
+- name: Getting process IDs of the qemu processes
   community.general.pids:
       name: qemu-system-aarch64
   register: pids_of_qemu
-  when: vm_port_status is succeeded
 
 - name: Kill qemu process
   shell: kill -9 {{ item }}
@@ -50,10 +39,9 @@
   when: vm_port_status is succeeded
   with_items: "{{ pids_of_qemu.pids }}"
 
-- name: Wait for machine to turn off
+- name: Wait 10s for the Qemu machine to turn off
   wait_for:
     timeout: 10
-  when: vm_port_status is succeeded
 
 - name: Make a copy of the file
   shell: "cp /opt/os-origin.img /opt/os.img"
