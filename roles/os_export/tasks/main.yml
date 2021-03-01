@@ -1,7 +1,19 @@
 ---
 
-- name: OS images ready!
-  debug:
-    msg:
-      - "OS images are ready. They can be fetched them with:"
-      - "rsync -r -e 'ssh -p {{ansible_port}}' --progress {{ansible_user}}@{{ansible_host}}:{{ os_images_artifacts_directory }}/ target/"
+- name: Compress the OS image
+  community.general.archive:
+    path: /opt/os-{{ item }}.img
+    dest: "/opt/ubuntu-{{ ubuntu_version }}-{{ item }}-{{ hostvars[item]['rpi_static_ip'] }}.zip"
+    format: zip
+  with_items:
+    - "{{ groups['master'] }}"
+    - "{{ groups['node'] }}"
+  delegate_to: "{{ groups['vm'][0] }}"
+
+
+- name: "Move the output image to '{{ os_images_artifacts_directory }}/'"
+  command: "mv /opt/ubuntu-{{ ubuntu_version }}-{{ item }}-{{ hostvars[item]['rpi_static_ip'] }}.zip {{ os_images_artifacts_directory }}/"
+  with_items:
+    - "{{ groups['master'] }}"
+    - "{{ groups['node'] }}"
+  delegate_to: "{{ groups['vm'][0] }}"

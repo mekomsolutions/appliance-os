@@ -52,14 +52,3 @@
     name: k3s-node
     daemon_reload: yes
     enabled: "{{ k3s_node_service_status }}"
-
-- name: Compress the OS image
-  community.general.archive:
-    path: /opt/os.img
-    dest: "/opt/ubuntu-{{ ubuntu_version }}-{{ inventory_hostname }}-{{ rpi_static_ip }}.zip"
-    format: zip
-  delegate_to: "{{ groups['vm'][0] }}"
-
-- name: "Move the output image to '{{ os_images_artifacts_directory }}/'"
-  command: "mv /opt/ubuntu-{{ ubuntu_version }}-{{ inventory_hostname }}-{{ rpi_static_ip }}.zip {{ os_images_artifacts_directory }}/"
-  delegate_to: "{{ groups['vm'][0] }}"
