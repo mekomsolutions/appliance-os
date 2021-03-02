@@ -36,7 +36,6 @@
 - name: Kill qemu process
   shell: kill -9 {{ item }}
   become: true
-  when: vm_port_status is succeeded
   with_items: "{{ pids_of_qemu.pids }}"
 
 - name: Wait 10s for the Qemu machine to turn off

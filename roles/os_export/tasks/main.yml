@@ -11,7 +11,7 @@
   delegate_to: "{{ groups['vm'][0] }}"
 
 - name: Save the current date
-  set_facts:
+  set_fact:
     current_date: "{{ ansible_date_time.date }}"
 
 - name: "Move the output image to '{{ os_images_artifacts_directory }}/'"
