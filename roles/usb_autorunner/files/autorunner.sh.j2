@@ -16,7 +16,7 @@ then
 fi
 
 if [ -r $USB_DATA_PATH/$AUTORUN_FILENAME ]
-then 
+then
   
   autorun_file_path=$(find $USB_DATA_PATH -maxdepth 1 -name $AUTORUN_FILENAME)
   decrypt_key_path=$(find $USB_DATA_PATH -maxdepth 1 -name $KEY_FILENAME)
@@ -30,11 +30,10 @@ then
   openssl enc -d -aes-256-cbc -pbkdf2 -in $autorun_file_path -out $AUTORUN_CONTENT_PATH/startup.zip -pass file:$AUTORUN_CONTENT_PATH/secret.key
 
   unzip -oq $AUTORUN_CONTENT_PATH/startup.zip -d $AUTORUN_CONTENT_PATH
-  exit 0
 
   if [ -r $AUTORUN_CONTENT_PATH/startup.sh ]
   then
-    sh $AUTORUN_CONTENT_PATH/startup.sh
+    bash $AUTORUN_CONTENT_PATH/startup.sh
   else
     echo "startup.sh file not found!"
     exit 1

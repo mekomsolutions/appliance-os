@@ -1,6 +1,7 @@
 #!/bin/bash
 
 filteredDeviceLabel=("cluster-nfs-disk")
+mkdir -p /mnt/usb
 
 inotifywait --format '%f' -m /dev -e CREATE | while read device
 do
@@ -13,12 +14,13 @@ do
 		if [[ $device =~ ^sd.* ]]
 		then
 
+			mkdir -p /mnt/usb/$device
 			echo "Reading device..."
-			sleep 1
+			mount /dev/$device /mnt/usb/$device 
 			echo $(lsblk /dev/$device -o MOUNTPOINT -n)
 			if [[ ! $(lsblk /dev/$device -o LABEL -n) =~ $filteredDeviceLabel ]]
 			then
-				./autorun.sh $(lsblk /dev/$device -o MOUNTPOINT -n) 
+				{{ usb_autorunner_install_path }}/autorunner.sh $(lsblk /dev/$device -o MOUNTPOINT -n) 
 			fi
 			echo "done."
 		fi
