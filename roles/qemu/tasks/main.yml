@@ -21,7 +21,7 @@
     - "{{ groups['master'] }}"
     - "{{ groups['node'] }}"
 
-- name: Wait for Qemu VM machine to be available - check 1
+- name: Wait for Qemu VMs to be available - check 1
   wait_for:
     port: "{{ hostvars[item]['ansible_port'] }}"
     connect_timeout: 20
@@ -30,5 +30,8 @@
     - "{{ groups['master'] }}"
     - "{{ groups['node'] }}"
 
-- name: Wait for Qemu VM machine to be available - check 2
+- name: Wait for Qemu VMs to be available - check 2
   shell: exit 0
+  with_items:
+    - "{{ groups['master'] }}"
+    - "{{ groups['node'] }}"

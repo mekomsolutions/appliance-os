@@ -1,8 +1,5 @@
 ---
 
-- name: Wait for Qemu VM machine to be available - check 2
-  shell: exit 0
-
 - name: Create '/boot/firmware/' directory
   file:
     path: /boot/firmware/
