@@ -10,9 +10,12 @@
     - "{{ groups['node'] }}"
   delegate_to: "{{ groups['vm'][0] }}"
 
+- name: Save the current date
+  set_facts:
+    current_date: "{{ ansible_date_time.date }}"
 
 - name: "Move the output image to '{{ os_images_artifacts_directory }}/'"
-  command: "mv /opt/ubuntu-{{ ubuntu_version }}-{{ item }}-{{ hostvars[item]['rpi_static_ip'] }}.zip {{ os_images_artifacts_directory }}/"
+  command: "mv /opt/ubuntu-{{ ubuntu_version }}-{{ item }}-{{ hostvars[item]['rpi_static_ip'] }}-{{ current_date }}.zip {{ os_images_artifacts_directory }}/"
   with_items:
     - "{{ groups['master'] }}"
     - "{{ groups['node'] }}"
