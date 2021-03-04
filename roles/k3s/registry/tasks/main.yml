@@ -1,0 +1,22 @@
+---
+
+- name: Copy registry resources on master
+  template:
+    src: "{{ item }}"
+    dest: /opt/registry/
+  with_fileglob:
+    - "manifests/*"
+  when: is_master
+
+- name: Apply registry manifests on master
+  shell: "k3s kubectl apply -f /opt/registry"
+  when: is_master
+
+- name: "Registry service needs too much disk space and won't start - do not wait for it to be started"
+  shell: "exit 0"
+  when: false
+
+- name: "Add registries.yaml"
+  template:
+    src: "files/registries.yaml.j2"
+    dest: "/etc/rancher/k3s/registries.yaml"

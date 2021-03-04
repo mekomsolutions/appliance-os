@@ -5,9 +5,9 @@
     src: "{{ item }}"
     dest: /opt/metallb/
   with_fileglob:
-    - "files/*"
+    - "manifests/*"
 
-- name: Apply MetalLB files
+- name: Apply MetalLB manifests
   shell: "k3s kubectl apply -f /opt/metallb"
 
 - name: Find out if 'memberlist' secret is already present

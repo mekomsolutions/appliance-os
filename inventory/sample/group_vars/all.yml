@@ -1,5 +1,4 @@
 ---
-
 force_handlers: True
 image_mount_point: /mnt/os
 cluster_user: mekom

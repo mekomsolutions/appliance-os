@@ -41,6 +41,7 @@
   roles:
     - role: k3s
     - role: k3s/metallb
+    - role: k3s/registry
 
 - hosts: node
   gather_facts: no

@@ -6,3 +6,4 @@ ansible_ssh_extra_args: '-o StrictHostKeyChecking=no'
 cluster_disk_mount_point:
 cluster_disk: absent
 cluster_disk_label:
+k8s_labels:
