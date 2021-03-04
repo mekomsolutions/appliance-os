@@ -23,11 +23,18 @@
 - hosts: cluster
   gather_facts: no
   become: true
+  tasks:
+    - name: Wait for Qemu VMs to be available
+      shell: exit 0
+
+- hosts: cluster
+  gather_facts: no
+  become: true
   roles:
     - role: common
     - role: usb_autorunner
     - role: k3s/install
-
+  
 - hosts: master
   gather_facts: no
   become: true
