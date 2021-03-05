@@ -59,3 +59,4 @@
     regexp: "LABEL={{ cluster_disk_label }}"
     state: "{{ cluster_disk | default (absent) }}"
     line: "LABEL={{ cluster_disk_label }}       {{ cluster_disk_mount_point }}  ext4    defaults        0       1"
+  when: cluster_disk_label is defined

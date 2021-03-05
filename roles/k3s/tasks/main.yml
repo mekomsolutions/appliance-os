@@ -72,3 +72,4 @@
 - name: Flag the node with appriopriate labels
   shell: "k3s kubectl label node {{ inventory_hostname }} {{ item.key }}={{ item.value }} --overwrite=true"
   loop: "{{ k8s_labels | dict2items }}"
+  when: k8s_labels is defined
