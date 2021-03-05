@@ -49,7 +49,7 @@ Required variables:
 | `gateway_ip`  | The IP address of the router used in production |
 | `rpi_static_ip`  | **To be set in the [hosts.yml](inventory/sample/hosts.yml) file**. Host-specific IP of each RPi |
 | `load_balancer_addresses`  | **To be set in the [hosts.yml](inventory/sample/hosts.yml) file**. Master-specific addresses range needed by the Load Balancer to properly function. This range should be reserved for the load balancer, therefore excluding all nodes IPs as well as any DHCP range. |
-
+| `registry_load_balancer_ip`  | The IP address of the container registry, inside the `load_balancer_addresses` range. |
 
 ### Run the playbook
 
