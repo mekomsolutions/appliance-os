@@ -34,7 +34,7 @@
     - role: common
     - role: usb_autorunner
     - role: k3s/install
-  
+
 - hosts: master
   gather_facts: no
   become: true
@@ -48,6 +48,7 @@
   become: true
   roles:
     - role: k3s
+    - role: k3s/registry
 
 - hosts: vm
   become: true

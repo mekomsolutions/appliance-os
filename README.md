@@ -56,5 +56,5 @@ Required variables:
 Run the playbook by replacing all the variable accordingly, inline as well as in [hosts.yml](inventory/sample/hosts.yml):
 
 ```bash
-ansible-playbook playbook.yml -i inventory/sample/hosts.yml --extra-vars "cluster_token=<cluster_token> vm_ip=<host_vm_ip> gateway_ip=<gateway_ip>"
+ansible-playbook playbook.yml -i inventory/sample/hosts.yml --extra-vars "cluster_token=<cluster_token> vm_ip=<host_vm_ip> gateway_ip=<gateway_ip> registry_load_balancer_ip=<registry_ip>"
 ```

@@ -22,9 +22,9 @@
 - name: Wait for MetalLB pods to be 'Running'
   shell: k3s kubectl get pods -n metallb-system -o json
   register: pod_status
-  until: "pod_status.stdout | from_json | json_query(query) == 'Running'"
+  until: "pod_status.stdout | from_json | json_query(query) == 'True'"
   vars:
-    query: 'items[?metadata.labels.component==`{{item}}`] | [?metadata.labels.app==`metallb`] | [0].status.phase'
+    query: 'items[?metadata.labels.component==`{{item}}`] | [?metadata.labels.app==`metallb`] | [0].status | conditions[?type==`Ready`] | [0].status'
   loop:
     - controller
     - speaker

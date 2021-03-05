@@ -9,17 +9,17 @@ reclaimPolicy: Retain
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: registry-pv
+  name: {{ registry_volume_prefix }}-pv
 spec:
   capacity:
-    storage: 30Gi
+    storage: {{ registry_storage_capacity }}
   volumeMode: Filesystem
   accessModes:
   - ReadWriteOnce
   persistentVolumeReclaimPolicy: Delete
   storageClassName: registry-storage
   local:
-    path: /mnt/disks/ssd1/registry
+    path: {{ registry_folder }}
   nodeAffinity:
     required:
       nodeSelectorTerms:
@@ -32,7 +32,7 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: registry-pvc
+  name: {{ registry_volume_prefix }}-pvc
   labels:
     app: registry
 spec:
@@ -41,4 +41,4 @@ spec:
   - ReadWriteOnce
   resources:
     requests:
-      storage: 30Gi
+      storage: {{ registry_storage_capacity }}

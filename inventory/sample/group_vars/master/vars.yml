@@ -9,3 +9,6 @@ cluster_disk_label: cluster-disk
 ansible_ssh_extra_args: '-o StrictHostKeyChecking=no'
 k8s_labels:
   role: database
+registry_folder: "{{ cluster_disk_mount_point }}/registry"
+registry_storage_capacity: 30G
+registry_volume_prefix: registry

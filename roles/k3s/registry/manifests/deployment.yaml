@@ -43,5 +43,4 @@ spec:
       volumes:
       - name: image-store
         persistentVolumeClaim:
-          claimName: registry-pvc
-      
+          claimName: {{ registry_volume_prefix }}-pvc
