@@ -6,60 +6,56 @@
     state: directory
   when: is_master
 
-- name: Create a temporary registry of small size (3M)
-  block:
-    - name: Configure a temporary registry of small size (3M)
-      set_fact:
-        registry_storage_capacity_old: "{{ registry_storage_capacity }}"
-        registry_storage_capacity: 3M
-        registry_volume_prefix_old: "{{ registry_volume_prefix }}"
-        registry_volume_prefix: temporary-registry
+- block:
+  - name: Configure a temporary registry of small size (3M)
+    set_fact:
+      registry_storage_capacity_old: "{{ registry_storage_capacity }}"
+      registry_storage_capacity: 3M
+      registry_volume_prefix_old: "{{ registry_volume_prefix }}"
+      registry_volume_prefix: temporary-registry
 
-    - name: Copy the temporary registry manifests
-      template:
-        src: "{{ item }}"
-        dest: /opt/registry/
-      with_fileglob:
-        - "manifests/*"
+  - name: Copy the temporary registry manifests
+    template:
+      src: "{{ item }}"
+      dest: /opt/registry/
+    with_fileglob:
+      - "manifests/*"
 
-    - name: Apply the temporary registry manifests
-      shell: "k3s kubectl apply -f /opt/registry"
+  - name: Apply the temporary registry manifests
+    shell: "k3s kubectl apply -f /opt/registry"
 
-    - name: Wait for temporary registry pods to be 'Ready'
-      shell: k3s kubectl get pods -o json
-      register: pod_status
-      until: "pod_status.stdout | from_json | json_query(query) == 'True'"
-      vars:
-        query: 'items[?metadata.labels.app==`registry`] | [0].status | conditions[?type==`Ready`] | [0].status'
-      retries: 30
-      delay: 10
+  - name: Wait for temporary registry pods to be 'Ready'
+    shell: k3s kubectl get pods -o json
+    register: pod_status
+    until: "pod_status.stdout | from_json | json_query(query) == 'True'"
+    vars:
+      query: 'items[?metadata.labels.app==`registry`] | [0].status | conditions[?type==`Ready`] | [0].status'
+    retries: 30
+    delay: 10
 
-    - name: Delete the temporary registry
-      shell: "k3s kubectl delete -f /opt/registry --force"
+  - name: Delete the temporary registry
+    shell: "k3s kubectl delete -f /opt/registry --force"
+
+  - name: Configure registry
+    set_fact:
+      registry_storage_capacity: "{{ registry_storage_capacity_old }}"
+      registry_volume_prefix: "{{ registry_volume_prefix_old }}"
+
+  - name: Copy manifests
+    template:
+      src: "{{ item }}"
+      dest: /opt/registry/
+    with_fileglob:
+      - "manifests/*"
+
+  - name: Apply manifests
+    shell: "k3s kubectl apply -f /opt/registry"
+
+  - debug:
+      msg: "Registry needs too much disk space and may not start - do not wait for it to be started"
   when: is_master
 
-- name: Create the actual registry
-  block:
-    - name: Configure registry
-      set_fact:
-        registry_storage_capacity: "{{ registry_storage_capacity_old }}"
-        registry_volume_prefix: "{{ registry_volume_prefix_old }}"
-
-    - name: Copy manifests
-      template:
-        src: "{{ item }}"
-        dest: /opt/registry/
-      with_fileglob:
-        - "manifests/*"
-
-    - name: Apply manifests
-      shell: "k3s kubectl apply -f /opt/registry"
-
-    - debug:
-        msg: "Registry needs too much disk space and may not start - do not wait for it to be started"
-  when: is_master
-
-- name: "Configure registries.yaml on all nodes"
+- name: "Configure registries.yaml: all nodes to us the new registry"
   template:
     src: "files/registries.yaml"
     dest: "/etc/rancher/k3s/registries.yaml"
