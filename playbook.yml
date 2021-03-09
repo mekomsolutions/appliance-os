@@ -50,6 +50,10 @@
     - role: k3s
     - role: k3s/registry
 
+- hosts: cluster
+  roles:
+    - role: clean
+
 - hosts: vm
   become: true
   roles:

@@ -189,7 +189,7 @@
     path: "{{ os_images_artifacts_directory }}"
     state: directory
 
-- name: Remove unneed 'Messages Of The Day' (motd)
+- name: Remove unneeded 'Messages Of The Day' (motd)
   file:
     path: "{{ image_mount_point }}/etc/update-motd.d/{{item}}"
     state: absent

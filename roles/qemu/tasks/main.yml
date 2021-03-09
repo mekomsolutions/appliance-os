@@ -15,7 +15,7 @@
     - "{{ groups['node'] }}"
 
 - name: Run Qemu VM
-  shell: qemu-system-aarch64 -M virt -accel tcg,thread=multi -m 4G -smp 4 -cpu cortex-a72 -kernel /opt/vmlinuz -initrd /opt/initrd.img -net tap -net nic -drive file=/opt/os-{{ item }}.img,if=none,id=drive0,cache=writeback,format=raw -device virtio-blk-device,drive=drive0,bootindex=0 -object rng-random,filename=/dev/random,id=rng0 -device virtio-rng-device,rng=rng0 -append 'root=/dev/vda2 noresume rw cgroup_enable=cpuset cgroup_memory=1 cgroup_enable=memory random.trust_cpu=on' -no-reboot -netdev user,id=net1,hostfwd=tcp::{{ hostvars[item]['ansible_port'] }}-:22 -device virtio-net-device,netdev=net1 -daemonize -display none
+  shell: qemu-system-aarch64 -M virt -accel tcg,thread=multi -m 4G -smp 4 -cpu cortex-a72 -kernel /opt/vmlinuz -initrd /opt/initrd.img -net tap -net nic -drive file=/opt/os-{{ item }}.img,if=none,id=drive0,cache=writeback,format=raw -device virtio-blk-device,drive=drive0,bootindex=0 -object rng-random,filename=/dev/random,id=rng0 -device virtio-rng-device,rng=rng0 -append 'root=/dev/vda2 noresume rw cgroup_enable=cpuset cgroup_memory=1 cgroup_enable=memory random.trust_cpu=on' -no-reboot -netdev user,id=net1,hostfwd=tcp::{{ hostvars[item]['ansible_port'] }}-:22 -device virtio-net-device,netdev=net1 -daemonize -display none && sleep 5
   become: true
   with_items:
     - "{{ groups['master'] }}"
