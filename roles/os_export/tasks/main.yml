@@ -1,5 +1,16 @@
 ---
 
+- name: Getting process IDs of the qemu VMs
+  community.general.pids:
+      name: qemu-system-aarch64
+  register: pids_of_vms
+
+- name: Wait for VMs to shutdown
+  wait_for:
+    path: "/proc/{{ item }}/status"
+    state: absent
+  with_items: "{{ pids_of_vms.pids }}"
+
 - name: Compress the OS image
   community.general.archive:
     path: /opt/os-{{ item }}.img
