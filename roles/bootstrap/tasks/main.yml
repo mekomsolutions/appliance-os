@@ -38,11 +38,11 @@
   become: true
   with_items: "{{ pids_of_qemu.pids }}"
 
-- name: Wait 10s for the Qemu machine to turn off
+- name: Wait 10s for the Qemu machines to turn off
   wait_for:
     timeout: 10
 
-- name: Make a copy of the file
+- name: Make a copy of the OS image file
   shell: "cp /opt/os-origin.img /opt/os.img"
 
 - name: Add some free space to the image

@@ -51,6 +51,8 @@
     - role: k3s/registry
 
 - hosts: cluster
+  gather_facts: no
+  become: true
   roles:
     - role: clean
 

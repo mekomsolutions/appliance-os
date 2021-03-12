@@ -1,5 +1,10 @@
 ---
 
+- name: Ensure '/etc/rancher/k3s' directiry exists
+  file:
+    path: /etc/rancher/k3s
+    state: directory
+
 - name: Create the registry folder
   file:
     path: "{{ registry_folder }}"
@@ -52,7 +57,7 @@
     shell: "k3s kubectl apply -f /opt/registry"
 
   - debug:
-      msg: "Registry needs too much disk space and may not start - do not wait for it to be started"
+      msg: "Registry service requires disk space and is not expected to start successfully in this context - do not wait."
   when: is_master
 
 - name: "Configure registries.yaml: all nodes to us the new registry"
