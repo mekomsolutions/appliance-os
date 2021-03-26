@@ -8,11 +8,23 @@
 - name: Configure boot options (enable cgroup)
   shell: "echo '{{ boot_options }}' > /boot/firmware/cmdline.txt"
 
+- name: Add RTC module configuration
+  blockinfile:
+    path: /boot/firmware/config.txt
+    block: |
+      dtparam=i2c_arm=on
+      dtoverlay=i2c-rtc,ds3231
+
 - name: Install network tools
   apt:
     name: net-tools
     state: present
     update-cache: yes
+
+- name: Install I2C library
+  apt:
+    name: i2c-tools
+    state: present
 
 - name: Add Kubic repo
   shell: ". /etc/os-release && echo \"deb https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/xUbuntu_${VERSION_ID}/ /\" | sudo tee /etc/apt/sources.list.d/devel:kubic:libcontainers:stable.list && curl -L https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/xUbuntu_${VERSION_ID}/Release.key | sudo apt-key add -"

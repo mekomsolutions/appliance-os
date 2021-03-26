@@ -1,0 +1,20 @@
+---
+
+- name: Copy nfs manifest files
+  template:
+    src: "{{ item }}"
+    dest: /opt/nfs/
+  with_fileglob:
+    - "manifests/*"
+
+- name: Apply NFS manifests
+  shell: "k3s kubectl apply -f /opt/nfs"
+
+- name: Wait for NFS pod to be 'Ready'
+  shell: k3s kubectl get pods -o json
+  register: pod_status
+  until: "pod_status.stdout | from_json | json_query(query) == 'True'"
+  vars:
+    query: 'items[?metadata.labels.app==`nfs-provisioner`] | [0].status | conditions[?type==`Ready`] | [0].status'
+  retries: 30
+  delay: 10
