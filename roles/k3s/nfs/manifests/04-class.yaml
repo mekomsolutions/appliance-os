@@ -1,0 +1,9 @@
+---
+
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: mekom-nfs
+provisioner: mekomsolutions.com/nfs
+mountOptions:
+  - vers=4.1

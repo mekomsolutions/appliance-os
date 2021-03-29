@@ -1,0 +1,35 @@
+---
+
+- name: Remove existing time pools
+  replace:
+    path: /etc/ntp.conf
+    regexp: 'pool '
+    replace: '# pool '
+
+- name: Remove existing time servers
+  replace:
+    path: /etc/ntp.conf
+    regexp: 'server '
+    replace: '# server '
+
+- name: Allow Listening to local network time broadcasts
+  replace:
+    path: /etc/ntp.conf
+    regexp: '(.*disable auth.*)'
+    replace: '#\1'
+
+- name: Trust local network time server
+  replace:
+    path: /etc/ntp.conf
+    regexp: '(.*broadcastclient.*)'
+    replace: '#\1'
+
+- name: Add master as time server
+  lineinfile:
+    path: "/etc/ntp.conf"
+    line: "server {{ master_static_ip }} prefer iburst"
+
+- name: Restart ntp service
+  ansible.builtin.systemd:
+    name: ntp
+    state: restarted

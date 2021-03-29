@@ -19,7 +19,7 @@ spec:
       containers:
       - name: registry
         image: registry:2
-        imagePullPolicy: Always
+        imagePullPolicy: IfNotPresent
         resources:
           # keep request = limit to keep this container in guaranteed class
           limits:

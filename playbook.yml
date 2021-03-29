@@ -34,12 +34,15 @@
     - role: common
     - role: usb_autorunner
     - role: k3s/install
+    - role: ntp/install
 
 - hosts: master
   gather_facts: no
   become: true
   roles:
+    - role: ntp/server
     - role: k3s
+    - role: k3s/nfs
     - role: k3s/metallb
     - role: k3s/registry
 
@@ -47,6 +50,7 @@
   gather_facts: no
   become: true
   roles:
+    - role: ntp/client
     - role: k3s
     - role: k3s/registry
 
