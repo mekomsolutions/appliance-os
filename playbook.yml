@@ -45,6 +45,7 @@
     - role: k3s/nfs
     - role: k3s/metallb
     - role: k3s/registry
+    - role: k3s/logging
 
 - hosts: node
   gather_facts: no

@@ -1,0 +1,20 @@
+---
+
+- name: Copy nfs manifest files
+  template:
+    src: "{{ item }}"
+    dest: /opt/logging/
+  with_fileglob:
+    - "manifests/*"
+
+- name: Apply logging manifests
+  shell: "k3s kubectl apply -f /opt/logging"
+
+- name: Wait for NFS pod to be 'Ready'
+  shell: k3s kubectl get pods -o json
+  register: pod_status
+  until: "pod_status.stdout | from_json | json_query(query) == 'True'"
+  vars:
+    query: 'items[?metadata.labels.app==`rsyslog`] | [0].status | conditions[?type==`Ready`] | [0].status'
+  retries: 30
+  delay: 10

@@ -122,4 +122,4 @@ spec:
       volumes:
         - name: export-volume
           hostPath:
-            path: /mnt/disks/ssd1/nfs
+            path: "{{ cluster_disk_mount_point }}/nfs"
