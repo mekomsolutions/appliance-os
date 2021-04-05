@@ -19,7 +19,6 @@
   apt:
     name: net-tools
     state: present
-    update-cache: yes
 
 - name: Install I2C library
   apt:

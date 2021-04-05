@@ -73,3 +73,6 @@
   shell: "k3s kubectl label node {{ inventory_hostname }} {{ item.key }}={{ item.value }} --overwrite=true"
   loop: "{{ k8s_labels | dict2items }}"
   when: k8s_labels is defined
+
+- name: "Pull K3s 'pause' image"
+  shell: k3s ctr image pull docker.io/rancher/pause:3.1
