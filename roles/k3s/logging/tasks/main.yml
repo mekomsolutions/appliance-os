@@ -1,6 +1,11 @@
 ---
 
-- name: Copy nfs manifest files
+- name: Ensure the logging directory exists
+  ansible.builtin.file:
+    path: "{{ cluster_disk_mount_point }}/logging"
+    state: directory
+
+- name: Copy logging manifest files
   template:
     src: "{{ item }}"
     dest: /opt/logging/
@@ -10,8 +15,8 @@
 - name: Apply logging manifests
   shell: "k3s kubectl apply -f /opt/logging"
 
-- name: Wait for NFS pod to be 'Ready'
-  shell: k3s kubectl get pods -o json
+- name: Wait for Logging pod to be 'Ready'
+  shell: k3s kubectl get pods -o json -n rsyslog
   register: pod_status
   until: "pod_status.stdout | from_json | json_query(query) == 'True'"
   vars:
