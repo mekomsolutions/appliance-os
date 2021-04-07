@@ -3,3 +3,4 @@
   apt:
     name:
       - ntp
+      - ntpdate

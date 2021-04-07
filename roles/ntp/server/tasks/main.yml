@@ -7,6 +7,8 @@
   with_items:
     - "broadcast {{ gateway_ip.split('.')[0] }}.{{ gateway_ip.split('.')[1] }}.{{ gateway_ip.split('.')[2] }}.255"
     - "broadcast 244.0.0.1"
+    - "server 127.127.1.0 # local clock"
+    - "fudge  127.127.1.0 refid RTC stratum 10"
 
 - name: Restart NTP service
   ansible.builtin.systemd:
