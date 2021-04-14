@@ -25,6 +25,15 @@
     name: i2c-tools
     state: present
 
+- name: Flush network interface
+  shell: ip a flush dev eth1
+
+- name: Set Static ip
+  shell: "ip a add {{ rpi_static_ip }}/24 dev eth1"
+
+- name: Ensure network interface is up
+  shell: ifconfig eth1 up
+
 - name: Add Kubic repo
   shell: ". /etc/os-release && echo \"deb https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/xUbuntu_${VERSION_ID}/ /\" | sudo tee /etc/apt/sources.list.d/devel:kubic:libcontainers:stable.list && curl -L https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/xUbuntu_${VERSION_ID}/Release.key | sudo apt-key add -"
 

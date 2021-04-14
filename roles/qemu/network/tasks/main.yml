@@ -1,0 +1,66 @@
+---
+
+- name: Install network dependencies
+  package:
+    name:
+    - bridge-utils
+    - net-tools
+
+- name: Check if Virtual interface exists
+  shell: "ip a | grep '{{ qemu_interface_name }}'"
+  ignore_errors: yes
+  register: host_qemu_interface
+
+- name: Create a Vlan device
+  shell: "ip link add link {{ ansible_default_ipv4.interface }} name {{ qemu_interface_name }} type vlan id 5"
+  when: host_qemu_interface.failed == true
+
+- name: Clear tap interfaces
+  shell: ip tuntap del mode tap {{ item }}
+  with_items:
+    - "{{ groups['master'] }}"
+    - "{{ groups['node'] }}"
+
+- name: Create tap interfaces
+  shell: ip tuntap add mode tap {{ item }}
+  with_items:
+    - "{{ groups['master'] }}"
+    - "{{ groups['node'] }}"
+
+- name: Clear bridge
+  shell: "ip link del {{ bridge_interface_name }} type bridge"
+  ignore_errors: yes
+
+- name: Create bridge
+  shell: "ip link add {{ bridge_interface_name }} type bridge"
+
+- name: Enslave interfaces to bridge
+  shell: ip link set {{ item }} master br0
+  with_items:
+    - "{{ groups['master'] }}"
+    - "{{ groups['node'] }}"
+    - "{{ qemu_interface_name }}"
+
+- name: Flush bridge interface
+  shell: "ip a flush dev {{ bridge_interface_name }}"
+
+- name: Flush virtual interface
+  shell: "ip a flush dev {{ qemu_interface_name }}"
+
+- name: Assign IP address to bridge interface
+  shell: "ip addr add {{ master_static_ip.split('.')[0] }}.{{ master_static_ip.split('.')[1] }}.{{ master_static_ip.split('.')[2] }}.1/24 dev {{ bridge_interface_name }} broadcast {{ master_static_ip.split('.')[0] }}.{{ master_static_ip.split('.')[1] }}.{{ master_static_ip.split('.')[2] }}.255"
+
+- name: Assign IP address to virtual device
+  shell: "ip addr add {{ master_static_ip.split('.')[0] }}.{{ master_static_ip.split('.')[1] }}.{{ master_static_ip.split('.')[2] }}.2/24 dev {{ qemu_interface_name }} broadcast {{ master_static_ip.split('.')[0] }}.{{ master_static_ip.split('.')[1] }}.{{ master_static_ip.split('.')[2] }}.255"
+
+- name: Enable STP for the bridge interface
+  shell: "brctl stp {{ bridge_interface_name }} yes"
+
+- name: Ensure all interfaces are up
+  shell: "ifconfig {{ item }} up"
+  with_items:
+    - "{{ groups['master'] }}"
+    - "{{ groups['node'] }}"
+    - "{{ qemu_interface_name }}"
+    - "{{ bridge_interface_name }}"
+  

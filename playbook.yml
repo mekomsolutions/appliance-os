@@ -14,10 +14,10 @@
         - not gateway_ip
 
 - hosts: vm
-  gather_facts: no
   become: true
   roles:
     - role: bootstrap
+    - role: qemu/network
     - role: qemu
 
 - hosts: cluster
@@ -71,5 +71,5 @@
     - name: OS images ready!
       debug:
         msg:
-          - "OS images are ready. They can be fetched them with:"
+          - "OS images are ready. They can be fetched with:"
           - "rsync -r -e 'ssh -p {{ansible_port}}' --progress {{ansible_user}}@{{ansible_host}}:{{ os_images_artifacts_directory }}/ target/"

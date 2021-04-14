@@ -55,6 +55,7 @@
     name: k3s-node
     daemon_reload: yes
     enabled: yes
+    state: "started"
   when: not is_master
 
 - name: "Wait for the cluster master node to be 'Ready'"
