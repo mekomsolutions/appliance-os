@@ -1,5 +1,5 @@
 ---
-- name: Install Depencencies
+- name: Install dependencies
   apt:
     name:
       - openssl

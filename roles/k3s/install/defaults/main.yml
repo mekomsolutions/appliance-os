@@ -1,2 +1,2 @@
-k3s_download_url: https://github.com/rancher/k3s/releases/download/{{ k3s_version }}/k3s-arm64
-k3s_binary_checksum: sha256:682b711aa4ca22d676bded3e9e8e83c6bc5270292824e4459d00ed735b078764
+k3s_images_download_url: https://github.com/k3s-io/k3s/releases/download/{{ k3s_version }}/k3s-airgap-images-arm64.tar
+k3s_bin_download_url: https://github.com/k3s-io/k3s/releases/download/{{ k3s_version }}/k3s-arm64

@@ -5,7 +5,8 @@ cluster_user: mekom
 cluster_user_id: 1040
 cluster_user_password: admin
 k3s_version: v1.19.7+k3s1
-k3s_binary_checksum: ""
+k3s_bin_checksum: "sha256:682b711aa4ca22d676bded3e9e8e83c6bc5270292824e4459d00ed735b078764"
+k3s_images_checksum: "sha256:b959672940f79e4912f52c31fa98f3a37c4eb362ec0d72df9bbf10834e0ea9c0"
 systemd_dir: /etc/systemd/system
 image_ssh_port: 5555
 cluster_token: "{{ token }}"

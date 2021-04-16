@@ -14,11 +14,25 @@
     state: present
     reload: yes
 
-- name: Download K3s binary for 'arm64' architecture
+- name: "Download K3s binary for 'arm64' architecture ('{{ k3s_version }}')"
   get_url:
-    url: "{{ k3s_download_url }}"
-    checksum: "{{ k3s_binary_checksum }}"
+    url: "{{ k3s_bin_download_url }}"
+    checksum: "{{ k3s_bin_checksum }}"
     dest: /usr/local/bin/k3s
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Create local images directory
+  file:
+    path: /var/lib/rancher/k3s/agent/images/
+    state: directory
+
+- name: Retrieve K3s images (for air gapped environment)
+  get_url:
+    url: "{{ k3s_images_download_url}}"
+    checksum: "{{ k3s_images_checksum }}"
+    dest: /var/lib/rancher/k3s/agent/images/
     owner: root
     group: root
     mode: 0755

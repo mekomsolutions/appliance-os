@@ -64,6 +64,3 @@
   template:
     src: "files/registries.yaml"
     dest: "/etc/rancher/k3s/registries.yaml"
-
-- name: Pull K3s 'pause' image
-  shell: k3s ctr image pull docker.io/rancher/pause:3.1

@@ -46,7 +46,7 @@
   shell: "cp /opt/os-origin.img /opt/os.img"
 
 - name: Add some free space to the image
-  shell: "dd if=/dev/zero bs=1M count=1500 >> /opt/os.img"
+  shell: "dd if=/dev/zero bs=1M count=2000 >> /opt/os.img"
 
 - name: Expand partition 2
   shell: "parted /opt/os.img resizepart 2 100%"
