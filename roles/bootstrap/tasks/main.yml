@@ -23,7 +23,7 @@
   shell: "unxz --keep /opt/os-origin.img.xz"
   when: unziped_image.stat.exists == false
 
-- name: Install 'psutil' python package
+- name: Install 'psutil' Python package
   pip:
     name: psutil
     executable: pip3

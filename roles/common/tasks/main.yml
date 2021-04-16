@@ -37,11 +37,14 @@
 - name: Add Kubic repo
   shell: ". /etc/os-release && echo \"deb https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/xUbuntu_${VERSION_ID}/ /\" | sudo tee /etc/apt/sources.list.d/devel:kubic:libcontainers:stable.list && curl -L https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/xUbuntu_${VERSION_ID}/Release.key | sudo apt-key add -"
 
+- name: Refresh cache
+  apt:
+    update_cache: yes
+
 - name: Install 'skopeo'
   apt:
     name: skopeo
     state: present
-    update-cache: yes
 
 - name: Ensure default ubuntu user is removed
   user:
@@ -62,11 +65,15 @@
     shell: /bin/bash
     password: "{{ hash_password_command_output.stdout }}"
 
-- name: Install system packages
+- name: Install 'unzip'
   apt:
-    pkg:
-    - unzip
-    - nfs-common
+    name: unzip
+    state: present
+
+- name: Install 'nfs-common'
+  apt:
+    name: nfs-common
+    state: present
 
 - name: "Ensure '{{ cluster_disk_mount_point }}' mount point is set according to cluster_disk: '{{ cluster_disk }}'"
   file:

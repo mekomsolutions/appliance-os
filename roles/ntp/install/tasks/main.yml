@@ -1,6 +1,10 @@
 ---
-- name: Install Depencencies
+- name: Install 'ntp'
   apt:
-    name:
-      - ntp
-      - ntpdate
+    name: ntp
+    state: present
+
+- name: Install 'ntpdate'
+  apt:
+    name: ntpdate
+    state: present
