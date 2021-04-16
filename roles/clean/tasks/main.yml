@@ -27,9 +27,6 @@
   delegate_to: 127.0.0.1
   become: false
 
-- debug:
-    msg: "{{ maven_version.matches[0].version }}"
-
 - name: Save the OS Maven version
   ansible.builtin.lineinfile:
     path: /etc/os-release
