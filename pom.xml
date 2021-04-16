@@ -1,0 +1,19 @@
+<project>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>net.mekomsolutions</groupId>
+  <artifactId>appliance-os</artifactId>
+  <name>Appliance OS</name>
+  <version>1.0.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+
+  <developers>
+    <developer>
+      <name>Mekom Solutions</name>
+    </developer>
+  </developers>
+  <organization>
+    <name>Mekom Solutions</name>
+    <url>http://www.mekomsolutions.com</url>
+  </organization>
+
+</project>

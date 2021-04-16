@@ -1,3 +1,40 @@
 ---
+- name: Get Git revision
+  shell: git rev-parse HEAD
+  register: git_revision
+  delegate_to: 127.0.0.1
+  become: false
+
+- name: Save the OS Git revision
+  ansible.builtin.lineinfile:
+    path: /etc/os-release
+    regexp: '^APPLIANCE_OS_REVISION='
+    line: APPLIANCE_OS_REVISION={{ git_revision.stdout }}
+
+- name: Install 'lxml' Python package
+  pip:
+    name: lxml
+    executable: pip3
+  delegate_to: 127.0.0.1
+  become: false
+
+- name: Get the Maven version from pom.xml
+  community.general.xml:
+    path: "{{ playbook_dir }}/pom.xml"
+    xpath: /project/version
+    content: text
+  register: maven_version
+  delegate_to: 127.0.0.1
+  become: false
+
+- debug:
+    msg: "{{ maven_version.matches[0].version }}"
+
+- name: Save the OS Maven version
+  ansible.builtin.lineinfile:
+    path: /etc/os-release
+    regexp: '^APPLIANCE_OS_VERSION='
+    line: APPLIANCE_OS_VERSION={{ maven_version.matches[0].version }}
+
 - name: Ensure Machine is shut down
   community.general.shutdown:
