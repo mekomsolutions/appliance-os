@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 TEMP_PATH=/tmp/autorunner/
-AUTORUN_CONTENT_PATH={{ usb_autorunner_install_path }}/workdir
+AUTORUNNER_WORKDIR={{ usb_autorunner_install_path }}/workdir
 PRIVATE_CERT={{ usb_autorunner_install_path }}/certificate/autorunner.pem
 PUBLIC_CERT={{ usb_autorunner_install_path }}/certificate/autorunner.pub.pem
 
@@ -12,7 +12,7 @@ MOUNT_POINT=$1
 
 if [ ! -r $MOUNT_POINT/$SECRET_KEY_FILENAME ]
 then
-  echo "Secret key file ‘$SECRET_KEY_FILENAME’ is missing at path $MOUNT_POINT/"
+  echo "Secret key file '$SECRET_KEY_FILENAME' is missing at path $MOUNT_POINT/"
   exit 1
 fi
 
@@ -23,17 +23,15 @@ then
   decrypt_key_path=$(find $MOUNT_POINT -maxdepth 1 -name $SECRET_KEY_FILENAME)
   
   # Clean workdir
-  rm -f $AUTORUN_CONTENT_PATH/*
+  rm -f $AUTORUNNER_WORKDIR/*
   rm -rf $TEMP_PATH
   mkdir -p $TEMP_PATH
   
   # Decrypting and executing the autorun script
+  openssl rsautl -decrypt -oaep -inkey $PRIVATE_CERT -in $decrypt_key_path -out $AUTORUNNER_WORKDIR/secret.key
+  openssl enc -d -aes-256-cbc -pbkdf2 -in $autorun_file_path -out $AUTORUNNER_WORKDIR/autorun.zip -pass file:$AUTORUNNER_WORKDIR/secret.key
 
-
-  openssl rsautl -decrypt -oaep -inkey $PRIVATE_CERT -in $decrypt_key_path -out $AUTORUN_CONTENT_PATH/secret.key
-  openssl enc -d -aes-256-cbc -pbkdf2 -in $autorun_file_path -out $AUTORUN_CONTENT_PATH/autorun.zip -pass file:$AUTORUN_CONTENT_PATH/secret.key
-
-  unzip -oq $AUTORUN_CONTENT_PATH/autorun.zip -d $TEMP_PATH
+  unzip -oq $AUTORUNNER_WORKDIR/autorun.zip -d $TEMP_PATH
 
   if [ -r $TEMP_PATH/run.sh ]
   then
