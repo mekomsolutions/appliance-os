@@ -28,14 +28,13 @@ then
   mkdir -p $TEMP_PATH
   
   # Decrypting and executing the autorun script
-  openssl rsautl -decrypt -oaep -inkey $PRIVATE_CERT -in $decrypt_key_path -out $AUTORUNNER_WORKDIR/secret.key
-  openssl enc -d -aes-256-cbc -pbkdf2 -in $autorun_file_path -out $AUTORUNNER_WORKDIR/autorun.zip -pass file:$AUTORUNNER_WORKDIR/secret.key
+  openssl rsautl -decrypt -oaep -inkey $PRIVATE_CERT -in $decrypt_key_path -out $TEMP_PATH/secret.key
+  openssl enc -d -aes-256-cbc -md sha256 -in $autorun_file_path -out $TEMP_PATH/autorun.zip -pass file:$TEMP_PATH/secret.key
+  unzip -oq $TEMP_PATH/autorun.zip -d $AUTORUNNER_WORKDIR
 
-  unzip -oq $AUTORUNNER_WORKDIR/autorun.zip -d $TEMP_PATH
-
-  if [ -r $TEMP_PATH/run.sh ]
+  if [ -r $AUTORUNNER_WORKDIR/run.sh ]
   then
-    bash $TEMP_PATH/run.sh
+    bash $AUTORUNNER_WORKDIR/run.sh
   else
     echo "run.sh file is not found in the extracted zip archive. Abort."
     exit 1

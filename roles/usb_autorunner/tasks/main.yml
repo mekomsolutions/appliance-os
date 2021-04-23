@@ -72,7 +72,7 @@
   shell: openssl rsautl -encrypt -oaep -pubin -inkey {{ usb_autorunner_install_path }}/certificate/autorunner.pub.pem -in {{ temp_test_folder.path }}/secret.key -out {{ temp_test_folder.path }}/secret.key.enc
 
 - name: Encrypt the file
-  shell: openssl aes-256-cbc -pbkdf2 -in {{ temp_test_folder.path }}/autorun.zip -out {{ temp_test_folder.path }}/autorun.zip.enc -pass file:{{ temp_test_folder.path }}/secret.key
+  shell: openssl aes-256-cbc -md sha256 -in {{ temp_test_folder.path }}/autorun.zip -out {{ temp_test_folder.path }}/autorun.zip.enc -pass file:{{ temp_test_folder.path }}/secret.key
 
 - name: Test the service
   shell: "{{ usb_autorunner_install_path }}/autorunner.sh {{ temp_test_folder.path }}"
