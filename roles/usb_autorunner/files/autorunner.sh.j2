@@ -1,45 +1,45 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-AUTORUN_CONTENT_PATH={{ usb_autorunner_install_path }}/workdir
+TEMP_PATH=/tmp/autorunner/
+AUTORUNNER_WORKDIR={{ usb_autorunner_install_path }}/workdir
 PRIVATE_CERT={{ usb_autorunner_install_path }}/certificate/autorunner.pem
 PUBLIC_CERT={{ usb_autorunner_install_path }}/certificate/autorunner.pub.pem
 
-AUTORUN_FILENAME=startup.zip.enc
-KEY_FILENAME=secret.key.enc
+AUTORUN_FILENAME=autorun.zip.enc
+SECRET_KEY_FILENAME=secret.key.enc
 
-USB_DATA_PATH=$1
+MOUNT_POINT=$1
 
-if [ ! -r $USB_DATA_PATH/$KEY_FILENAME ]
+if [ ! -r $MOUNT_POINT/$SECRET_KEY_FILENAME ]
 then
-  echo "key file is missing, exiting"
+  echo "Secret key file '$SECRET_KEY_FILENAME' is missing at path $MOUNT_POINT/"
   exit 1
 fi
 
-if [ -r $USB_DATA_PATH/$AUTORUN_FILENAME ]
+if [ -r $MOUNT_POINT/$AUTORUN_FILENAME ]
 then
   
-  autorun_file_path=$(find $USB_DATA_PATH -maxdepth 1 -name $AUTORUN_FILENAME)
-  decrypt_key_path=$(find $USB_DATA_PATH -maxdepth 1 -name $KEY_FILENAME)
+  autorun_file_path=$(find $MOUNT_POINT -maxdepth 1 -name $AUTORUN_FILENAME)
+  decrypt_key_path=$(find $MOUNT_POINT -maxdepth 1 -name $SECRET_KEY_FILENAME)
   
   # Clean workdir
-  rm -f $AUTORUN_CONTENT_PATH/*
+  rm -f $AUTORUNNER_WORKDIR/*
+  rm -rf $TEMP_PATH
+  mkdir -p $TEMP_PATH
+  
   # Decrypting and executing the autorun script
+  openssl rsautl -decrypt -oaep -inkey $PRIVATE_CERT -in $decrypt_key_path -out $TEMP_PATH/secret.key
+  openssl enc -d -aes-256-cbc -md sha256 -in $autorun_file_path -out $TEMP_PATH/autorun.zip -pass file:$TEMP_PATH/secret.key
+  unzip -oq $TEMP_PATH/autorun.zip -d $AUTORUNNER_WORKDIR
 
-
-  openssl rsautl -decrypt -oaep -inkey $PRIVATE_CERT -in $decrypt_key_path -out $AUTORUN_CONTENT_PATH/secret.key
-  openssl enc -d -aes-256-cbc -pbkdf2 -in $autorun_file_path -out $AUTORUN_CONTENT_PATH/startup.zip -pass file:$AUTORUN_CONTENT_PATH/secret.key
-
-  unzip -oq $AUTORUN_CONTENT_PATH/startup.zip -d $AUTORUN_CONTENT_PATH
-
-  if [ -r $AUTORUN_CONTENT_PATH/startup.sh ]
+  if [ -r $AUTORUNNER_WORKDIR/run.sh ]
   then
-    bash $AUTORUN_CONTENT_PATH/startup.sh
+    bash $AUTORUNNER_WORKDIR/run.sh
   else
-    echo "startup.sh file not found!"
+    echo "run.sh file is not found in the extracted zip archive. Abort."
     exit 1
   fi
 else
-  # Create backup profile
   echo "No autorun defined, exiting"
   exit 1
 fi
