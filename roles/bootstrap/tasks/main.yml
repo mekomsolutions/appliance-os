@@ -8,11 +8,7 @@
   register: download
 
 - name: Install system packages
-  package:
-    name:
-    - kpartx
-    - python3-pip
-    update_cache: yes
+  shell: apt update && apt install kpartx python3-pip -y
 
 - name: Check that 'os-origin.img' exists
   stat:
@@ -46,7 +42,7 @@
   shell: "cp /opt/os-origin.img /opt/os.img"
 
 - name: Add some free space to the image
-  shell: "dd if=/dev/zero bs=1M count=2000 >> /opt/os.img"
+  shell: "dd if=/dev/zero bs=1M count=3000 >> /opt/os.img"
 
 - name: Expand partition 2
   shell: "parted /opt/os.img resizepart 2 100%"
@@ -119,14 +115,7 @@
     remote_src: yes
 
 - name: Install Qemu packages
-  package:
-    name:
-      - qemu
-      - binfmt-support
-      - qemu-user-static
-      - qemu-utils
-      - qemu-efi-aarch64
-      - qemu-system-arm
+  shell: apt install qemu binfmt-support qemu-user-static qemu-utils qemu-efi-aarch64 qemu-system-arm -y
 
 - name: Copy 'qemu-arm-static'
   copy:

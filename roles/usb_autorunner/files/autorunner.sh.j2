@@ -18,28 +18,33 @@ fi
 
 if [ -r $MOUNT_POINT/$AUTORUN_FILENAME ]
 then
-  
+
   autorun_file_path=$(find $MOUNT_POINT -maxdepth 1 -name $AUTORUN_FILENAME)
   decrypt_key_path=$(find $MOUNT_POINT -maxdepth 1 -name $SECRET_KEY_FILENAME)
-  
+
   # Clean workdir
-  rm -f $AUTORUNNER_WORKDIR/*
+  echo "🧽 Clean working directory..."
+  rm -rf $AUTORUNNER_WORKDIR/*
   rm -rf $TEMP_PATH
   mkdir -p $TEMP_PATH
-  
+
   # Decrypting and executing the autorun script
+  echo "🔓 Decrypt 'secret.key'..."
   openssl rsautl -decrypt -oaep -inkey $PRIVATE_CERT -in $decrypt_key_path -out $TEMP_PATH/secret.key
+  echo "🔓 Decrypt 'autorun.zip'..."
   openssl enc -d -aes-256-cbc -md sha256 -in $autorun_file_path -out $TEMP_PATH/autorun.zip -pass file:$TEMP_PATH/secret.key
+  echo "⚙️ Unzip 'autorun.zip'..."
   unzip -oq $TEMP_PATH/autorun.zip -d $AUTORUNNER_WORKDIR
 
   if [ -r $AUTORUNNER_WORKDIR/run.sh ]
   then
+    echo "🚀 Run 'run.sh'..."
     bash $AUTORUNNER_WORKDIR/run.sh
   else
-    echo "run.sh file is not found in the extracted zip archive. Abort."
+    echo "⚠️ run.sh file is not found in the extracted zip archive. Abort."
     exit 1
   fi
 else
-  echo "No autorun defined, exiting"
+  echo "⚠️ No autorun defined, exiting"
   exit 1
 fi

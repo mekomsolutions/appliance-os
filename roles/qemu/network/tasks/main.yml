@@ -1,10 +1,7 @@
 ---
 
 - name: Install network dependencies
-  package:
-    name:
-    - bridge-utils
-    - net-tools
+  shell: apt install bridge-utils net-tools -y
 
 - name: Check if Virtual interface exists
   shell: "ip a | grep '{{ qemu_interface_name }}'"
@@ -63,4 +60,3 @@
     - "{{ groups['node'] }}"
     - "{{ qemu_interface_name }}"
     - "{{ bridge_interface_name }}"
-  

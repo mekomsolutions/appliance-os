@@ -15,15 +15,8 @@
       dtparam=i2c_arm=on
       dtoverlay=i2c-rtc,ds3231
 
-- name: Install network tools
-  apt:
-    name: net-tools
-    state: present
-
-- name: Install I2C library
-  apt:
-    name: i2c-tools
-    state: present
+- name: Install tools
+  shell: apt install net-tools i2c-tools -y
 
 - name: Flush network interface
   shell: ip a flush dev eth1
@@ -42,9 +35,7 @@
     update_cache: yes
 
 - name: Install 'skopeo'
-  apt:
-    name: skopeo
-    state: present
+  shell: apt install skopeo -y
 
 - name: Ensure default ubuntu user is removed
   user:
@@ -65,15 +56,8 @@
     shell: /bin/bash
     password: "{{ hash_password_command_output.stdout }}"
 
-- name: Install 'unzip'
-  apt:
-    name: unzip
-    state: present
-
-- name: Install 'nfs-common'
-  apt:
-    name: nfs-common
-    state: present
+- name: Install 'unzip' and 'nfs-common'
+  shell: apt install unzip nfs-common -y
 
 - name: "Ensure '{{ cluster_disk_mount_point }}' mount point is set according to cluster_disk: '{{ cluster_disk }}'"
   file:

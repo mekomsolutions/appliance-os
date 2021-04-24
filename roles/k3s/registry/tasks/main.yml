@@ -60,7 +60,7 @@
       msg: "Registry service requires disk space and is not expected to start successfully in this context - do not wait."
   when: is_master
 
-- name: "Configure registries.yaml: all nodes to us the new registry"
+- name: "Configure registries.yaml: all nodes to use the new registry"
   template:
     src: "files/registries.yaml"
     dest: "/etc/rancher/k3s/registries.yaml"

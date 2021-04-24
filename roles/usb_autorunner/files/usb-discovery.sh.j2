@@ -9,22 +9,21 @@ do
 
 	if [[ ( "$devIsConnected" != 0) ]]
 	then
-		echo "Device connection detected"
-		echo $device
+		echo "⚡️ Device '$device' connection detected ⚡️"
 		if [[ $device =~ ^sd.* ]]
 		then
-
+			echo "⚙️ Create mount point: '/mnt/usb/$device'."
 			mkdir -p /mnt/usb/$device
-			echo "Reading device..."
-			mount /dev/$device /mnt/usb/$device 
-			echo $(lsblk /dev/$device -o MOUNTPOINT -n)
+			echo "⚙️ Mount device '/mnt/usb/$device'..."
+			mount /dev/$device /mnt/usb/$device
 			if [[ ! $(lsblk /dev/$device -o LABEL -n) =~ $filteredDeviceLabel ]]
 			then
-				{{ usb_autorunner_install_path }}/autorunner.sh $(lsblk /dev/$device -o MOUNTPOINT -n) 
+				echo "⚙️ Trigger USB Autorunner on '/mnt/usb/$device'..."
+				{{ usb_autorunner_install_path }}/autorunner.sh $(lsblk /dev/$device -o MOUNTPOINT -n)
 			fi
-			echo "Unmounting device..."
+			echo "⚙️ Unmounting device..."
 			umount /dev/$device
-			echo "Done."
+			echo "😴 Standing by..."
 		fi
 	fi
 done
