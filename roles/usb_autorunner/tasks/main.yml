@@ -1,6 +1,6 @@
 ---
 - name: Install dependencies
-  shell: apt install openssl zip inotify-tools -y
+  shell: apt install openssl zip inotify-tools jq -y
 
 - name: Ensure 'usb-autorunner' installation directory exists
   file:
