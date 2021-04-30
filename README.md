@@ -11,7 +11,7 @@ Key features of the OS are:
 Start Multipass machine locally:
 
 ```bash
-multipass launch -d 16G -m 6G -n os-builder -c 4
+multipass launch -d 32G -m 8G -n os-builder -c 4
 ```
 
 Paste your public key in:
@@ -45,10 +45,10 @@ Required variables:
 | Variable name  | Description |
 | ------------- | ------------- |
 |  `cluster_token` | A unique token that'll be shared between master and nodes so they identify as part of the same cluster. On MacOS, you can use `uuidgen \| tr '[:upper:]' '[:lower:]'` (Linux `uuid`) to get a random value |
-| `vm_ip`  | The IP address of the host VM for Ansible to connect to and prepare the OS image as well as start the Qemu machine (could be of any CPU arch) |
+| `vm_ip`  | The IP address of the host VM for Ansible to connect to (might be the Multipass machine if applicable) and prepare the OS image as well as start the Qemu machine (could be of any CPU arch) |
 | `gateway_ip`  | The IP address of the router used in production |
-| `rpi_static_ip`  | **To be set in the [hosts.yml](inventory/sample/hosts.yml) file**. Host-specific IP of each RPi |
-| `load_balancer_addresses`  | **To be set in the [hosts.yml](inventory/sample/hosts.yml) file**. Master-specific addresses range needed by the Load Balancer to properly function. This range should be reserved for the load balancer, therefore excluding all nodes IPs as well as any DHCP range. |
+| `rpi_static_ip`  | **To be set in the [hosts.yml](inventory/sample/hosts.yml) file**. Host-specific IP of **each RPi** |
+| `load_balancer_addresses`  | **To be set in the [hosts.yml](inventory/sample/hosts.yml) file**. Master-specific range of IP addresses needed by the Load Balancer to properly function. This range should be reserved for the load balancer, therefore excluding all nodes IPs as well as any DHCP range. |
 | `registry_load_balancer_ip`  | The IP address of the container registry, inside the `load_balancer_addresses` range. |
 
 ### Run the playbook
