@@ -36,7 +36,7 @@ then
   openssl rsautl -decrypt -oaep -inkey $PRIVATE_CERT -in $decrypt_key_path -out $TEMP_PATH/secret.key
   echo "🔓 Decrypt 'autorun.zip'..."
   openssl enc -d -aes-256-cbc -md sha256 -in $autorun_file_path -out $TEMP_PATH/autorun.zip -pass file:$TEMP_PATH/secret.key
-  echo "⚙️ Unzip 'autorun.zip'..."
+  echo "⚙️  Unzip 'autorun.zip'..."
   unzip -oq $TEMP_PATH/autorun.zip -d $AUTORUNNER_WORKDIR
 
   if [ -r $AUTORUNNER_WORKDIR/run.sh ]
