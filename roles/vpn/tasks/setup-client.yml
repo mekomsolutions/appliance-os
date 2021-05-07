@@ -1,0 +1,39 @@
+---
+- name: Install OpenVPN package
+  shell: apt install openvpn -y
+
+- name: Create an OpenVPN folder to store keys
+  file:
+    path: "{{ openvpn_keys_folder }}"
+    state: directory
+    mode: 0700
+
+- name: Copy the private key
+  copy:
+    src: '{{ certificates_folder }}/{{ common_name }}.key'
+    dest: '{{ openvpn_keys_folder }}/{{ common_name }}.key'
+
+- name: Set private access to the private key file
+  file:
+    path: '{{ openvpn_keys_folder }}/{{ common_name }}.key'
+    mode: 0600
+
+- name: Copy the certificate
+  copy:
+    src: '{{ certificates_folder }}/{{ common_name }}.crt'
+    dest: '{{ openvpn_keys_folder }}/{{ common_name }}.crt'
+
+- name: Copy the CA chain
+  copy:
+    src: '{{ certificates_folder }}/{{ mks_vpn_pki_chain_name }}.crt'
+    dest: '{{ openvpn_keys_folder }}/{{ mks_vpn_pki_chain_name }}.crt'
+
+- name: Copy the configuration file
+  template:
+    src: "{{ certificates_folder }}/client.conf"
+    dest: "{{ openvpn_folder }}/client.conf"
+
+- name: Set OpenVPN as a service to start at boot
+  service:
+    name: "openvpn@client"
+    enabled: yes

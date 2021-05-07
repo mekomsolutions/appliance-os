@@ -1,0 +1,3 @@
+---
+- include: setup-client.yml
+  when: not skip_vpn

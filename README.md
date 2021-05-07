@@ -50,10 +50,31 @@ Required variables:
 | `rpi_static_ip`  | **To be set in the [hosts.yml](inventory/sample/hosts.yml) file**. Host-specific IP of **each RPi** |
 | `load_balancer_addresses`  | **To be set in the [hosts.yml](inventory/sample/hosts.yml) file**. Master-specific range of IP addresses needed by the Load Balancer to properly function. This range should be reserved for the load balancer, therefore excluding all nodes IPs as well as any DHCP range. |
 | `registry_load_balancer_ip`  | The IP address of the container registry, inside the `load_balancer_addresses` range. |
+| `common_name`  | **To be set in the [hosts.yml](inventory/sample/hosts.yml) file**. The Common Name of the target on the Mekom VPN |
+
+
+#### VPN configuration
+
+> **Tip:**  to skip VPN configuration
+```
+--extra-vars skip_vpn=true
+```
+
+Please provide **private** and **public keys** for each cluster node as well as the **CA chain** and the **client.conf** file, in the **certificates/** folder (create such folder at the root of this project) such as:
+```
+certificates/
+ -- 123.example.net.key
+ -- 123.example.net.crt
+ -- 456.example.net.key
+ -- 456.example.net.crt
+ -- ...
+ -- ca-chain.crt
+ -- client.conf
+```  
 
 ### Run the playbook
 
-Run the playbook by replacing all the variable accordingly, inline as well as in [hosts.yml](inventory/sample/hosts.yml):
+Run the playbook by replacing all the variable to the table above, inline as well as in [hosts.yml](inventory/sample/hosts.yml):
 
 ```bash
 ansible-playbook playbook.yml -i inventory/sample/hosts.yml --extra-vars "cluster_token=<cluster_token> vm_ip=<host_vm_ip> gateway_ip=<gateway_ip> registry_load_balancer_ip=<registry_ip>"
