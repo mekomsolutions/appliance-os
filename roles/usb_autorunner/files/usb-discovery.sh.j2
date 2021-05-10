@@ -1,6 +1,6 @@
 #!/bin/bash
 
-filteredDeviceLabel=("cluster-nfs-disk")
+filteredDeviceLabel=("cluster-disk")
 mkdir -p /mnt/usb
 
 inotifywait --format '%f' -m /dev -e CREATE | while read device
