@@ -1,2 +1,2 @@
-k3s_images_download_url: https://github.com/k3s-io/k3s/releases/download/{{ k3s_version }}/k3s-airgap-images-arm64.tar
+k3s_images_download_url: https://s3-eu-west-1.amazonaws.com/mekomsolutions.public.1/k3s-airgap-images-arm.tar.gz
 k3s_bin_download_url: https://github.com/k3s-io/k3s/releases/download/{{ k3s_version }}/k3s-arm64
