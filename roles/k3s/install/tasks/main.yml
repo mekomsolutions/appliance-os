@@ -32,7 +32,7 @@
   get_url:
     url: "{{ k3s_images_download_url}}"
     checksum: "{{ k3s_images_checksum }}"
-    dest: /var/lib/rancher/k3s/agent/images/
+    dest: /var/lib/rancher/k3s/agent/images/k3s-airgap-images-arm64.tar
     owner: root
     group: root
     mode: 0755
