@@ -18,7 +18,7 @@
     format: zip
   with_items:
     - "{{ groups['master'] }}"
-    - "{{ groups['node'] }}"
+    - "{{ groups['workers'] }}"
 
 - name: Save the current date
   set_fact:
@@ -28,4 +28,4 @@
   command: "mv /opt/ubuntu-{{ item }}.zip {{ os_images_artifacts_directory }}/ubuntu-{{ ubuntu_version }}-{{ item }}-{{ hostvars[item]['rpi_static_ip'] }}-{{ current_date }}.zip"
   with_items:
     - "{{ groups['master'] }}"
-    - "{{ groups['node'] }}"
+    - "{{ groups['workers'] }}"

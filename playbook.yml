@@ -48,7 +48,7 @@
     - role: k3s/registry
     - role: k3s/logging
 
-- hosts: node
+- hosts: workers
   gather_facts: no
   become: true
   roles:

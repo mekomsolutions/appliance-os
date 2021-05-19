@@ -16,13 +16,13 @@
   shell: ip tuntap del mode tap {{ item }}
   with_items:
     - "{{ groups['master'] }}"
-    - "{{ groups['node'] }}"
+    - "{{ groups['workers'] }}"
 
 - name: Create tap interfaces
   shell: ip tuntap add mode tap {{ item }}
   with_items:
     - "{{ groups['master'] }}"
-    - "{{ groups['node'] }}"
+    - "{{ groups['workers'] }}"
 
 - name: Clear bridge
   shell: "ip link del {{ bridge_interface_name }} type bridge"
@@ -35,7 +35,7 @@
   shell: ip link set {{ item }} master br0
   with_items:
     - "{{ groups['master'] }}"
-    - "{{ groups['node'] }}"
+    - "{{ groups['workers'] }}"
     - "{{ qemu_interface_name }}"
 
 - name: Flush bridge interface
@@ -57,6 +57,6 @@
   shell: "ifconfig {{ item }} up"
   with_items:
     - "{{ groups['master'] }}"
-    - "{{ groups['node'] }}"
+    - "{{ groups['workers'] }}"
     - "{{ qemu_interface_name }}"
     - "{{ bridge_interface_name }}"

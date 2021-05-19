@@ -28,7 +28,7 @@ multipass info os-builder | grep IPv4
 
 ### Generate token
 
-Genete a token for the nodes to auto join the master:
+Genete a token for the workers to join the master:
 on MacOS:
 ```
 uuidgen | tr '[:upper:]' '[:lower:]'
