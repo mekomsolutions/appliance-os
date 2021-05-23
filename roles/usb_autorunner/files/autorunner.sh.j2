@@ -20,7 +20,7 @@ fi
 if [ -r $MOUNT_POINT/$AUTORUN_FILENAME ]
 then
   # Write USB information
-  echo "moun_point=$MOUNT_POINT" > $USB_INFO_FILE
+  echo "mount_point=$MOUNT_POINT" > $USB_INFO_FILE
 
   autorun_file_path=$(find $MOUNT_POINT -maxdepth 1 -name $AUTORUN_FILENAME)
   decrypt_key_path=$(find $MOUNT_POINT -maxdepth 1 -name $SECRET_KEY_FILENAME)
