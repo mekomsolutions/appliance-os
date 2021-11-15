@@ -4,6 +4,8 @@ Description=USB Discovery
 [Service]
 Type=simple
 ExecStart=/bin/bash {{ usb_autorunner_install_path }}/usb-discovery.sh
+StandardOutput=append:/var/log/usb-discovery.log
+StandardError=inherit 
 
 [Install]
 WantedBy=multi-user.target

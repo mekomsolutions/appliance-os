@@ -1,0 +1,7 @@
+---
+is_master: false
+ansible_host: "{{ vm_ip }}"
+ansible_user: "{{ cluster_user }}"
+ansible_ssh_extra_args: '-o StrictHostKeyChecking=no'
+cluster_disk_mount_point:
+cluster_disk: absent
