@@ -1,54 +1,31 @@
 ---
-- name: Install dependencies
-  shell: apt install openssl zip inotify-tools jq -y
+- name: Add repository
+  shell: echo "deb https://nexus.mekomsolutions.net/repository/mks-apt/ bullseye main" | sudo tee -a /etc/apt/sources.list > /dev/null
 
-- name: Ensure 'usb-autorunner' installation directory exists
-  file:
-    path: "{{ usb_autorunner_install_path }}"
-    state: directory
+- name: Add repository certificate
+  shell: wget -qO - https://nexus.mekomsolutions.net/repository/apt-cert/public.key | sudo apt-key add -
 
-- name: Ensure autorunner work directory exists
-  file:
-    path: "{{ usb_autorunner_install_path }}/workdir"
-    state: directory
+- name: Install usb-autorunner
+  shell: sudo apt-get update && sudo apt-get install -y usb-autorunner
 
 - name: Ensure autorunner certificate directory exists
   file:
     path: "{{ usb_autorunner_install_path }}/certificate"
     state: directory
 
+- name: Ensure autorunner.sh is executable
+  shell: sudo chmod +x /opt/usb-autorunner/autorunner.sh
+
 - name: Create encryption private key
   copy:
     src: certificate/autorunner.pem
-    dest: "{{ usb_autorunner_install_path }}/certificate/autorunner.pem"
+    dest: "/etc/usb-autorunner/certificates/private.pem"
     mode: 0600
 
 - name: Create encryption public key
   copy:
     src: certificate/autorunner.pub.pem
-    dest: "{{ usb_autorunner_install_path }}/certificate/autorunner.pub.pem"
-
-- name: Copy 'usb-discovery.service'
-  template:
-    src: "{{ role_path }}/files/usb-discovery.service.j2"
-    dest: "/etc/systemd/system/usb-discovery.service"
-
-- name: Copy 'autorunner.sh'
-  template:
-    src: "{{ role_path }}/files/autorunner.sh.j2"
-    dest: "{{ usb_autorunner_install_path }}/autorunner.sh"
-    mode: u=+rwx,g=rx,o=r
-
-- name: Copy 'usb-discovery.sh'
-  template:
-    src: "{{ role_path }}/files/usb-discovery.sh.j2"
-    dest: "{{ usb_autorunner_install_path }}/usb-discovery.sh"
-    mode: u=+rwx,g=rx,o=r
-
-- name: Ensure USB Autorunner is enabled
-  systemd:
-    name: usb-discovery
-    enabled: yes
+    dest: "/etc/usb-autorunner/certificates/public.pem"
 
 - name: Create temporary test directory
   tempfile:
@@ -65,7 +42,7 @@
   shell: openssl rand -base64 32 > {{ temp_test_folder.path }}/secret.key
 
 - name: Encrypt the key
-  shell: openssl rsautl -encrypt -oaep -pubin -inkey {{ usb_autorunner_install_path }}/certificate/autorunner.pub.pem -in {{ temp_test_folder.path }}/secret.key -out {{ temp_test_folder.path }}/secret.key.enc
+  shell: openssl rsautl -encrypt -oaep -pubin -inkey /etc/usb-autorunner/certificates/public.pem -in {{ temp_test_folder.path }}/secret.key -out {{ temp_test_folder.path }}/secret.key.enc
 
 - name: Encrypt the file
   shell: openssl aes-256-cbc -md sha256 -in {{ temp_test_folder.path }}/autorun.zip -out {{ temp_test_folder.path }}/autorun.zip.enc -pass file:{{ temp_test_folder.path }}/secret.key

@@ -31,7 +31,7 @@ subjects:
   - kind: ServiceAccount
     name: nfs-provisioner
      # replace with namespace where provisioner is deployed
-    namespace: default
+    namespace: appliance
 roleRef:
   kind: ClusterRole
   name: nfs-provisioner-runner

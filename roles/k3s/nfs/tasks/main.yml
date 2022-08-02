@@ -8,10 +8,10 @@
     - "manifests/*"
 
 - name: Apply NFS manifests
-  shell: "k3s kubectl apply -f /opt/nfs"
+  shell: "k3s kubectl apply -n appliance -f /opt/nfs"
 
 - name: Wait for NFS pod to be 'Ready'
-  shell: k3s kubectl get pods -o json
+  shell: k3s kubectl get pods -o json -n appliance
   register: pod_status
   until: "pod_status.stdout | from_json | json_query(query) == 'True'"
   vars:

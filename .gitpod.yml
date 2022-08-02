@@ -1,0 +1,7 @@
+
+tasks:
+  - name: Install usb-autorunner
+    command: |
+      echo "deb https://nexus.mekomsolutions.net/repository/mks-apt/ bullseye main" | sudo tee -a /etc/apt/sources.list > /dev/null
+      wget -qO - https://nexus.mekomsolutions.net/repository/apt-cert/public.key | sudo apt-key add -
+      sudo apt-get update && sudo apt-get install -y usb-autorunner

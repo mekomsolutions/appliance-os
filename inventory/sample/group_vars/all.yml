@@ -12,7 +12,7 @@ image_ssh_port: 5555
 cluster_token: "{{ token }}"
 master_static_ip: "{{ hostvars[groups['master'][0]]['rpi_static_ip'] }}"
 public_dns_ips: "208.67.222.222, 208.67.220.220"
-usb_autorunner_install_path: /opt/autorunner
+usb_autorunner_install_path: /opt/usb-autorunner
 ubuntu_version: 20.04.2
 os_images_artifacts_directory: /opt/artifacts
 
