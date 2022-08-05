@@ -74,3 +74,7 @@
   shell: "k3s kubectl label node {{ inventory_hostname }} {{ item.key }}={{ item.value }} --overwrite=true"
   loop: "{{ k8s_labels | dict2items }}"
   when: k8s_labels is defined
+
+- name: Create namespace for the appliance services
+  shell: "k3s kubectl create namespace appliance"
+  when: is_master
