@@ -1,7 +1,7 @@
 ---
 
 - hosts: localhost
-  gather_facts: no
+  gather_facts: yes
   tasks:
     - fail:
         msg: "'cluster_token', 'vm_ip' or 'gateway_ip' variable are empty or null. Eg, pass it as a command line argument: '--extra-args cluster_token=a7b4aa66-9573-4906-b656-fa5db0ba0dec'"
@@ -12,6 +12,15 @@
         - not vm_ip
         - gateway_ip == ""
         - not gateway_ip
+
+    - name: Loading project version from the parent Maven pom.xml
+      xml:
+        path: "pom.xml"
+        xpath: "/project/version"
+        content: text
+      register: version
+
+    - set_fact: os_version="{{ version.matches[0].version }}"
 
 - hosts: vm
   become: true
